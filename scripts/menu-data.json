@@ -1,0 +1,1166 @@
+{
+  "restaurant": {
+    "name": "HINDUSTAN RESTAURANT",
+    "phone1": "+91 8879396241",
+    "phone2": "022- 23478066",
+    "address": "Hindustan Restaurant",
+    "developerName": "Salman Furniturewala",
+    "developerPhone": "+91 7303321019"
+  },
+  "categories": [
+    {
+      "name": "CHICKEN SOUPS",
+      "sort_order": 1
+    },
+    {
+      "name": "VEG SOUPS",
+      "sort_order": 2
+    },
+    {
+      "name": "CHICKEN STARTERS",
+      "sort_order": 3
+    },
+    {
+      "name": "VEG STARTER",
+      "sort_order": 4
+    },
+    {
+      "name": "TANDOORI CHICKEN STARTER",
+      "sort_order": 5
+    },
+    {
+      "name": "VEG CURRIES",
+      "sort_order": 6
+    },
+    {
+      "name": "PANEER CURRIES",
+      "sort_order": 7
+    },
+    {
+      "name": "EGG CURRIES",
+      "sort_order": 8
+    },
+    {
+      "name": "TEA AND COLDRINKS",
+      "sort_order": 9
+    },
+    {
+      "name": "KHICHDA",
+      "sort_order": 10
+    },
+    {
+      "name": "SEEKH",
+      "sort_order": 11
+    },
+    {
+      "name": "HINDUSTAN KEEMA",
+      "sort_order": 12
+    },
+    {
+      "name": "HINDUSTAN KEBAB",
+      "sort_order": 13
+    },
+    {
+      "name": "SEA FOODS",
+      "sort_order": 14
+    },
+    {
+      "name": "EXTRA",
+      "sort_order": 15
+    },
+    {
+      "name": "ROTI MEIN",
+      "sort_order": 16
+    },
+    {
+      "name": "VEG CHINESE RICE",
+      "sort_order": 17
+    },
+    {
+      "name": "VEG CHINESE NOODLES",
+      "sort_order": 18
+    },
+    {
+      "name": "KEPSA ITEM",
+      "sort_order": 19
+    },
+    {
+      "name": "CHICKEN CHINESE RICE WITH GRAVY",
+      "sort_order": 20
+    },
+    {
+      "name": "CHICKEN CHINESE RICE",
+      "sort_order": 21
+    },
+    {
+      "name": "CHICKEN CHINESE NOODLES",
+      "sort_order": 22
+    },
+    {
+      "name": "CHICKEN CHINESE NOODLES WITH GRAVY",
+      "sort_order": 23
+    },
+    {
+      "name": "HINDUSTAN BIRYANI",
+      "sort_order": 24
+    },
+    {
+      "name": "HINDUSTAN SPECIAL RICE",
+      "sort_order": 25
+    },
+    {
+      "name": "CHICKEN CURRIES",
+      "sort_order": 26
+    },
+    {
+      "name": "MUTTON CURRIES",
+      "sort_order": 27
+    },
+    {
+      "name": "FISH CURRIES",
+      "sort_order": 28
+    }
+  ],
+  "items": {
+    "CHICKEN SOUPS": [
+      {
+        "name": "CHICKEN MANCHOW SOUP",
+        "price": 90
+      },
+      {
+        "name": "CHICKEN SWEET CORN SOUP",
+        "price": 90
+      },
+      {
+        "name": "CHICKEN HOT AND SOUR SOUP",
+        "price": 90
+      },
+      {
+        "name": "CHICKEN LEMON CORIANDER SOUP",
+        "price": 100
+      },
+      {
+        "name": "MUTTON SOUP",
+        "price": 120
+      }
+    ],
+    "VEG SOUPS": [
+      {
+        "name": "TOMATO SOUP",
+        "price": 40
+      },
+      {
+        "name": "VEG MANCHOW SOUP",
+        "price": 80
+      },
+      {
+        "name": "VEG SWEET CORN SOUP",
+        "price": 80
+      },
+      {
+        "name": "VEG HOT AND SOUR SOUP",
+        "price": 80
+      },
+      {
+        "name": "VEG LEMON CORIANDER SOUP",
+        "price": 90
+      }
+    ],
+    "CHICKEN STARTERS": [
+      {
+        "name": "CHICKEN MANCHURIAN DRY",
+        "price": 240
+      },
+      {
+        "name": "CHICKEN MANCHURIAN GRAVY",
+        "price": 260
+      },
+      {
+        "name": "CHICKEN CHILLY DRY",
+        "price": 260
+      },
+      {
+        "name": "CHICKEN CHILLY GRAVY",
+        "price": 280
+      },
+      {
+        "name": "CHICKEN LOLLIPOP DRY",
+        "price": 280
+      },
+      {
+        "name": "CHICKEN LOLLIPOP GRAVY",
+        "price": 300
+      },
+      {
+        "name": "CHICKEN 65 DRY",
+        "price": 280
+      },
+      {
+        "name": "CHICKEN 65 GRAVY",
+        "price": 300
+      },
+      {
+        "name": "CHILLY CHICKEN",
+        "price": 280
+      },
+      {
+        "name": "CHICKEN STEAM",
+        "price": 260
+      },
+      {
+        "name": "CHICKEN SPRING ROLL",
+        "price": 180
+      },
+      {
+        "name": "CHICKEN CRISPY",
+        "price": 200
+      },
+      {
+        "name": "CHICKEN LOLLIPOP",
+        "price": 280
+      }
+    ],
+    "VEG STARTER": [
+      {
+        "name": "VEG MANCHURIAN DRY",
+        "price": 180
+      },
+      {
+        "name": "VEG MANCHURIAN GRAVY",
+        "price": 200
+      },
+      {
+        "name": "VEG BALLS DRY",
+        "price": 160
+      },
+      {
+        "name": "VEG BALLS GRAVY",
+        "price": 180
+      },
+      {
+        "name": "BABY CORN MANCHURIAN",
+        "price": 180
+      },
+      {
+        "name": "CHILLY PANEER DRY",
+        "price": 220
+      },
+      {
+        "name": "CHILLY PANEER GRAVY",
+        "price": 240
+      },
+      {
+        "name": "PANEER CHILLY",
+        "price": 240
+      },
+      {
+        "name": "MUSHROOM CHILLY",
+        "price": 200
+      },
+      {
+        "name": "GOBI MANCHURIAN DRY",
+        "price": 180
+      },
+      {
+        "name": "GOBI MANCHURIAN GRAVY",
+        "price": 200
+      },
+      {
+        "name": "VEG SPRING ROLL",
+        "price": 160
+      },
+      {
+        "name": "VEG CRISPY",
+        "price": 160
+      }
+    ],
+    "TANDOORI CHICKEN STARTER": [
+      {
+        "name": "FULL CHICKEN",
+        "price": 400
+      },
+      {
+        "name": "HALF CHICKEN",
+        "price": 220
+      },
+      {
+        "name": "QUARTER CHICKEN",
+        "price": 120
+      },
+      {
+        "name": "CHICKEN TIKKA",
+        "price": 240
+      },
+      {
+        "name": "CHICKEN TIKKA MASALA",
+        "price": 260
+      },
+      {
+        "name": "AFGHANI CHICKEN",
+        "price": 300
+      },
+      {
+        "name": "TANGRI KEBAB",
+        "price": 280
+      },
+      {
+        "name": "MALAI TIKKA",
+        "price": 300
+      },
+      {
+        "name": "HARA BHARA TIKKA",
+        "price": 280
+      },
+      {
+        "name": "SEEKH KEBAB",
+        "price": 200
+      }
+    ],
+    "VEG CURRIES": [
+      {
+        "name": "VEG KADAI",
+        "price": 200
+      },
+      {
+        "name": "VEG JAIPURI",
+        "price": 200
+      },
+      {
+        "name": "VEG MAKHANWALA",
+        "price": 210
+      },
+      {
+        "name": "VEG SHAHI KORMA",
+        "price": 230
+      },
+      {
+        "name": "VEG KOLHAPURI",
+        "price": 200
+      },
+      {
+        "name": "MIX VEG",
+        "price": 100
+      },
+      {
+        "name": "ALOO GOBI",
+        "price": 130
+      },
+      {
+        "name": "CHANA MASALA",
+        "price": 130
+      },
+      {
+        "name": "ALOO MUTTER",
+        "price": 130
+      },
+      {
+        "name": "ALOO PALAK",
+        "price": 130
+      },
+      {
+        "name": "DAL FRY BUTTER",
+        "price": 140
+      },
+      {
+        "name": "DAL TADKA",
+        "price": 130
+      },
+      {
+        "name": "DAL FRY",
+        "price": 80
+      },
+      {
+        "name": "VEG CHATPATA",
+        "price": 300
+      }
+    ],
+    "PANEER CURRIES": [
+      {
+        "name": "PANEER LAJAWAB",
+        "price": 370
+      },
+      {
+        "name": "PANEER TAWA",
+        "price": 300
+      },
+      {
+        "name": "PANEER BHURJI",
+        "price": 260
+      },
+      {
+        "name": "PANEER MASALA",
+        "price": 250
+      },
+      {
+        "name": "PANEER TIKKA MASALA",
+        "price": 260
+      },
+      {
+        "name": "PANEER BUTTER MASALA",
+        "price": 280
+      },
+      {
+        "name": "PANEER KADAI",
+        "price": 280
+      },
+      {
+        "name": "PANEER MUTTER",
+        "price": 200
+      },
+      {
+        "name": "PANEER PALAK",
+        "price": 200
+      },
+      {
+        "name": "PANEER CHATPATA",
+        "price": 200
+      },
+      {
+        "name": "PANEER ANGARA",
+        "price": 370
+      },
+      {
+        "name": "PANEER LAZEEZ",
+        "price": 370
+      }
+    ],
+    "EGG CURRIES": [
+      {
+        "name": "EGG MASALA",
+        "price": 80
+      },
+      {
+        "name": "EGG MASALA FRY",
+        "price": 120
+      },
+      {
+        "name": "EGG BHURJI",
+        "price": 80
+      },
+      {
+        "name": "EGG OMELETTE DOUBLE",
+        "price": 60
+      },
+      {
+        "name": "EGG HALF FRY",
+        "price": 60
+      }
+    ],
+    "TEA AND COLDRINKS": [
+      {
+        "name": "TEA",
+        "price": 20
+      },
+      {
+        "name": "SPL TEA",
+        "price": 40
+      },
+      {
+        "name": "COLDRINKS 500ML",
+        "price": 40
+      },
+      {
+        "name": "MINERAL WATER BIG",
+        "price": 20
+      },
+      {
+        "name": "COLD DRINKS",
+        "price": 20
+      },
+      {
+        "name": "JEERA MASALA SODA",
+        "price": 20
+      }
+    ],
+    "KHICHDA": [
+      {
+        "name": "KHICHDA",
+        "price": 100
+      }
+    ],
+    "SEEKH": [
+      {
+        "name": "CHICKEN SEEKH KABAB",
+        "price": 200
+      },
+      {
+        "name": "MUTTON SEEKH KABAB",
+        "price": 250
+      }
+    ],
+    "HINDUSTAN KEEMA": [
+      {
+        "name": "SPL KEEMA",
+        "price": 120
+      },
+      {
+        "name": "SPL KEEMA FRY",
+        "price": 140
+      },
+      {
+        "name": "SADA KEEMA",
+        "price": 80
+      },
+      {
+        "name": "SADA KEEMA FRY",
+        "price": 100
+      },
+      {
+        "name": "KEEMA GHOTALA",
+        "price": 130
+      },
+      {
+        "name": "SPL KEEMA GHOTALA",
+        "price": 160
+      },
+      {
+        "name": "SPECIAL FULL KEEMA",
+        "price": 240
+      },
+      {
+        "name": "SADA KEEMA FULL",
+        "price": 160
+      },
+      {
+        "name": "SPL KEEMA PULAO",
+        "price": 200
+      },
+      {
+        "name": "SADA KEEMA PULAO",
+        "price": 180
+      },
+      {
+        "name": "SPL KEEMA FRIED RICE",
+        "price": 240
+      }
+    ],
+    "HINDUSTAN KEBAB": [
+      {
+        "name": "HINDUSTAN KEBAB 12PCS",
+        "price": 40
+      },
+      {
+        "name": "HINDUSTAN KEBAB 6PCS",
+        "price": 20
+      },
+      {
+        "name": "EGG KEBAB 12PCS",
+        "price": 75
+      },
+      {
+        "name": "DOUBLE EGG KEBAB 12PCS",
+        "price": 105
+      },
+      {
+        "name": "DOUBLE EGG KEBAB 6PCS",
+        "price": 85
+      },
+      {
+        "name": "EGG KEBAB 6PCS",
+        "price": 55
+      }
+    ],
+    "SEA FOODS": [
+      {
+        "name": "PRAWNS FRIED RICE",
+        "price": 240
+      },
+      {
+        "name": "PRAWNS SEZ. FRIED RICE",
+        "price": 290
+      },
+      {
+        "name": "PRAWNS SEZ. NOODLES",
+        "price": 300
+      },
+      {
+        "name": "PRAWNS PULAV",
+        "price": 230
+      },
+      {
+        "name": "PRAWNS BIRYANI",
+        "price": 200
+      },
+      {
+        "name": "PRAWNS MASALA",
+        "price": 240
+      },
+      {
+        "name": "PRAWNS PLAIN FRY",
+        "price": 250
+      },
+      {
+        "name": "PRAWNS CHILLY",
+        "price": 280
+      },
+      {
+        "name": "PRAWNS CHILLY DRY",
+        "price": 280
+      }
+    ],
+    "EXTRA": [
+      {
+        "name": "EXTRA SCHEZWAN CHATNI",
+        "price": 25
+      },
+      {
+        "name": "EXTRA GREEN CHATNI",
+        "price": 25
+      },
+      {
+        "name": "EXTRA TOMATO SAUCE",
+        "price": 25
+      },
+      {
+        "name": "EXTRA FRY NOODLES",
+        "price": 25
+      }
+    ],
+    "ROTI MEIN": [
+      {
+        "name": "TANDOORI ROTI",
+        "price": 15
+      },
+      {
+        "name": "BTR ROTI",
+        "price": 20
+      },
+      {
+        "name": "NAAN",
+        "price": 40
+      },
+      {
+        "name": "BTR NAAN",
+        "price": 50
+      },
+      {
+        "name": "LACHA PARATHA",
+        "price": 50
+      },
+      {
+        "name": "CHAPATHI",
+        "price": 10
+      },
+      {
+        "name": "SPL CHAPATHI",
+        "price": 20
+      },
+      {
+        "name": "CHAPATHI PARATHA",
+        "price": 30
+      },
+      {
+        "name": "BTR GARLIC NAAN",
+        "price": 70
+      },
+      {
+        "name": "BUTTER CHAPATI",
+        "price": 20
+      }
+    ],
+    "VEG CHINESE RICE": [
+      {
+        "name": "VEG FRIED RICE",
+        "price": 190
+      },
+      {
+        "name": "VEG SCHEZWAN FRIED RICE",
+        "price": 210
+      },
+      {
+        "name": "VEG MANCHURIAN FRIED RICE",
+        "price": 280
+      },
+      {
+        "name": "VEG SINGAPORE FRIED RICE",
+        "price": 260
+      },
+      {
+        "name": "VEG HONG KONG FRIED RICE",
+        "price": 260
+      },
+      {
+        "name": "VEG CHILLY FRIED RICE",
+        "price": 280
+      },
+      {
+        "name": "EGG SEZ. FRIED RICE",
+        "price": 200
+      }
+    ],
+    "VEG CHINESE NOODLES": [
+      {
+        "name": "VEG HAKKA NOODLES",
+        "price": 180
+      },
+      {
+        "name": "VEG SCHEZWAN NOODLES",
+        "price": 200
+      },
+      {
+        "name": "VEG SINGAPORE NOODLES",
+        "price": 190
+      },
+      {
+        "name": "VEG HONG KONG NOODLES",
+        "price": 190
+      },
+      {
+        "name": "VEG MANCHURIAN NOODLES",
+        "price": 280
+      },
+      {
+        "name": "VEG CHILLY NOODLES",
+        "price": 280
+      },
+      {
+        "name": "EGG SEZ. NOODLES",
+        "price": 200
+      }
+    ],
+    "KEPSA ITEM": [
+      {
+        "name": "CHILLY KEPSA HALF",
+        "price": 680
+      },
+      {
+        "name": "CHILLY KEPSA FULL",
+        "price": 1350
+      },
+      {
+        "name": "SCHEZWAN KEPSA HALF",
+        "price": 750
+      },
+      {
+        "name": "SCHEZWAN KEPS FULL",
+        "price": 1430
+      },
+      {
+        "name": "ARBI KEPSA HALF",
+        "price": 680
+      },
+      {
+        "name": "ARBI KEPSA FULL",
+        "price": 1350
+      },
+      {
+        "name": "CHICKEN KEPSA HALF",
+        "price": 650
+      },
+      {
+        "name": "CHICKEN KEPSA FULL",
+        "price": 1250
+      },
+      {
+        "name": "MUTTON KEPSA HALF",
+        "price": 780
+      },
+      {
+        "name": "MUTTON KEPSA FULL",
+        "price": 1350
+      },
+      {
+        "name": "ARBI CHILLY KEPSA HALF",
+        "price": 700
+      },
+      {
+        "name": "ARBI CHILLY KEPSA FULL",
+        "price": 1380
+      },
+      {
+        "name": "MINI KEPSA CHICKEN",
+        "price": 400
+      },
+      {
+        "name": "MINI KEPSA MUTTON",
+        "price": 450
+      },
+      {
+        "name": "MINI PANEER KEPSA",
+        "price": 400
+      },
+      {
+        "name": "MINI ARBI KEPSA",
+        "price": 450
+      },
+      {
+        "name": "SEHEZWAN MINI KEPSA",
+        "price": 450
+      }
+    ],
+    "CHICKEN CHINESE RICE WITH GRAVY": [
+      {
+        "name": "CHI. CHILLY RICE",
+        "price": 320
+      },
+      {
+        "name": "CHI. TRIPLE RICE",
+        "price": 360
+      },
+      {
+        "name": "CHI. MANCHURIAN RICE",
+        "price": 340
+      },
+      {
+        "name": "CHI. DRAGON RICE",
+        "price": 360
+      },
+      {
+        "name": "CHI. CHOPPER RICE",
+        "price": 380
+      },
+      {
+        "name": "CHI. MALAYSIAN RICE",
+        "price": 500
+      },
+      {
+        "name": "CHI. BUTTER RICE",
+        "price": 370
+      },
+      {
+        "name": "HINDUSTAN SPECIAL FRIED RICE",
+        "price": 500
+      },
+      {
+        "name": "CHI. POT RICE",
+        "price": 350
+      }
+    ],
+    "CHICKEN CHINESE RICE": [
+      {
+        "name": "CHI. FRIED RICE",
+        "price": 220
+      },
+      {
+        "name": "CHI. SCHEZWAN FRIED RICE",
+        "price": 240
+      },
+      {
+        "name": "CHI. SINGAPORE FRIED RICE",
+        "price": 260
+      },
+      {
+        "name": "CHI. HONG KONG FRIED RICE",
+        "price": 260
+      },
+      {
+        "name": "CHI. MIXED FRIED RICE",
+        "price": 270
+      },
+      {
+        "name": "COMBIN. FRIED RICE",
+        "price": 300
+      }
+    ],
+    "CHICKEN CHINESE NOODLES": [
+      {
+        "name": "CHI. HAKKA NOODLES",
+        "price": 200
+      },
+      {
+        "name": "CHI. SCHEZWAN NOODLES",
+        "price": 220
+      },
+      {
+        "name": "CHI. HONG KONG NOODLES",
+        "price": 240
+      },
+      {
+        "name": "CHI. SINGAPORE NOODLES",
+        "price": 240
+      },
+      {
+        "name": "MIX NOODLES",
+        "price": 300
+      },
+      {
+        "name": "CHI. AMERICAN CHOPSEY",
+        "price": 250
+      }
+    ],
+    "CHICKEN CHINESE NOODLES WITH GRAVY": [
+      {
+        "name": "CHI. CHILLY NOODLES",
+        "price": 320
+      },
+      {
+        "name": "CHI. TRIPLE NOODLES",
+        "price": 350
+      },
+      {
+        "name": "CHI. MANCHURIAN NOODLES",
+        "price": 340
+      },
+      {
+        "name": "CHI. DRAGON NOODLES",
+        "price": 410
+      },
+      {
+        "name": "CHI. MALAYSIA NOODLES",
+        "price": 400
+      },
+      {
+        "name": "HINDUSTAN SPECIAL NOODLES",
+        "price": 460
+      }
+    ],
+    "HINDUSTAN BIRYANI": [
+      {
+        "name": "VEG BIRYANI",
+        "price": 180
+      },
+      {
+        "name": "PANEER BIRYANI",
+        "price": 220
+      },
+      {
+        "name": "EGG BIRYANI",
+        "price": 200
+      },
+      {
+        "name": "CHICKEN BIRYANI",
+        "price": 260
+      },
+      {
+        "name": "MUTTON BIRYANI",
+        "price": 300
+      },
+      {
+        "name": "PRAWNS BIRYANI",
+        "price": 320
+      },
+      {
+        "name": "FISH BIRYANI",
+        "price": 280
+      },
+      {
+        "name": "EGG FRIED RICE",
+        "price": 160
+      },
+      {
+        "name": "CHICKEN FRIED RICE",
+        "price": 200
+      },
+      {
+        "name": "MUTTON FRIED RICE",
+        "price": 240
+      },
+      {
+        "name": "PRAWNS FRIED RICE",
+        "price": 280
+      },
+      {
+        "name": "VEG FRIED RICE",
+        "price": 140
+      }
+    ],
+    "HINDUSTAN SPECIAL RICE": [
+      {
+        "name": "VEG PULAO",
+        "price": 140
+      },
+      {
+        "name": "PANEER PULAO",
+        "price": 180
+      },
+      {
+        "name": "EGG PULAO",
+        "price": 160
+      },
+      {
+        "name": "CHICKEN PULAO",
+        "price": 220
+      },
+      {
+        "name": "MUTTON PULAO",
+        "price": 260
+      },
+      {
+        "name": "PRAWNS PULAO",
+        "price": 280
+      }
+    ],
+    "CHICKEN CURRIES": [
+      {
+        "name": "CHICKEN MASALA",
+        "price": 220
+      },
+      {
+        "name": "CHICKEN BUTTER MASALA",
+        "price": 280
+      },
+      {
+        "name": "CHICKEN TIKKA MASALA",
+        "price": 260
+      },
+      {
+        "name": "CHICKEN KADAI",
+        "price": 260
+      },
+      {
+        "name": "CHICKEN JAIPURI",
+        "price": 260
+      },
+      {
+        "name": "CHICKEN KOLHAPURI",
+        "price": 260
+      },
+      {
+        "name": "CHICKEN SHAHIKORMA",
+        "price": 300
+      },
+      {
+        "name": "CHICKEN LAJAWAB",
+        "price": 300
+      },
+      {
+        "name": "CHICKEN CURRY",
+        "price": 220
+      },
+      {
+        "name": "CHICKEN DO PYAZA",
+        "price": 240
+      },
+      {
+        "name": "CHICKEN BHUNA",
+        "price": 240
+      },
+      {
+        "name": "CHICKEN ACHARI",
+        "price": 260
+      },
+      {
+        "name": "CHICKEN METHI",
+        "price": 260
+      },
+      {
+        "name": "CHICKEN PALAK",
+        "price": 260
+      },
+      {
+        "name": "CHICKEN MUTTER",
+        "price": 260
+      },
+      {
+        "name": "CHICKEN CHETTINAD",
+        "price": 280
+      },
+      {
+        "name": "CHICKEN CHILLY GARLIC",
+        "price": 280
+      }
+    ],
+    "MUTTON CURRIES": [
+      {
+        "name": "MUTTON MASALA",
+        "price": 260
+      },
+      {
+        "name": "MUTTON BUTTER MASALA",
+        "price": 320
+      },
+      {
+        "name": "MUTTON TIKKA MASALA",
+        "price": 300
+      },
+      {
+        "name": "MUTTON KADAI",
+        "price": 300
+      },
+      {
+        "name": "MUTTON JAIPURI",
+        "price": 300
+      },
+      {
+        "name": "MUTTON KOLHAPURI",
+        "price": 300
+      },
+      {
+        "name": "MUTTON SHAHIKORMA",
+        "price": 340
+      },
+      {
+        "name": "MUTTON LAJAWAB",
+        "price": 340
+      },
+      {
+        "name": "MUTTON CURRY",
+        "price": 260
+      },
+      {
+        "name": "MUTTON DO PYAZA",
+        "price": 280
+      },
+      {
+        "name": "MUTTON BHUNA",
+        "price": 280
+      },
+      {
+        "name": "MUTTON ACHARI",
+        "price": 300
+      },
+      {
+        "name": "MUTTON METHI",
+        "price": 300
+      },
+      {
+        "name": "MUTTON PALAK",
+        "price": 300
+      },
+      {
+        "name": "MUTTON MUTTER",
+        "price": 300
+      },
+      {
+        "name": "MUTTON CHETTINAD",
+        "price": 320
+      },
+      {
+        "name": "MUTTON CHILLY GARLIC",
+        "price": 320
+      }
+    ],
+    "FISH CURRIES": [
+      {
+        "name": "FISH MASALA",
+        "price": 260
+      },
+      {
+        "name": "FISH CURRY",
+        "price": 260
+      },
+      {
+        "name": "FISH TIKKA MASALA",
+        "price": 300
+      },
+      {
+        "name": "FISH KADAI",
+        "price": 300
+      },
+      {
+        "name": "FISH BHUNA",
+        "price": 280
+      },
+      {
+        "name": "FISH DO PYAZA",
+        "price": 280
+      },
+      {
+        "name": "FISH PALAK",
+        "price": 280
+      },
+      {
+        "name": "FISH METHI",
+        "price": 300
+      },
+      {
+        "name": "FISH CHILLY",
+        "price": 300
+      },
+      {
+        "name": "FISH CHILLY GARLIC",
+        "price": 300
+      }
+    ]
+  }
+}

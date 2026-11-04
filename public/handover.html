@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hindustan Restaurant — Handover Guide</title>
+<style>
+  body { font-family: Arial, Helvetica, sans-serif; max-width: 800px; margin: 40px auto; padding: 0 24px; color: #222; line-height: 1.6; }
+  h1 { color: #8a7322; border-bottom: 3px solid #d4af37; padding-bottom: 8px; }
+  h2 { color: #8a7322; margin-top: 28px; }
+  h3 { color: #555; }
+  table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+  th, td { border: 1px solid #ddd; padding: 8px 12px; text-align: left; }
+  th { background: #f5f0e0; color: #8a7322; }
+  code { background: #f0f0f0; padding: 2px 6px; border-radius: 4px; font-size: 0.9em; }
+  .box { background: #fff8e1; border: 1px solid #d4af37; padding: 12px 16px; border-radius: 8px; margin: 12px 0; }
+  .warn { color: #b00; font-weight: bold; }
+  ul, ol { padding-left: 22px; }
+  li { margin: 4px 0; }
+  @media print {
+    body { margin: 0; }
+    a { color: #000; text-decoration: none; }
+    .no-print { display: none; }
+  }
+</style>
+</head>
+<body>
+<h1>🍽️ HINDUSTAN RESTAURANT — DIGITAL QR MENU</h1>
+<p><strong>Handover & User Guide</strong> · Confidential — contains admin credentials.</p>
+
+<h2>1. Live URLs</h2>
+<table>
+  <tr><th>Purpose</th><th>URL</th></tr>
+  <tr><td>Customer Menu (Public)</td><td>https://hindustan-restaurant-one.vercel.app</td></tr>
+  <tr><td>Menu Page</td><td>https://hindustan-restaurant-one.vercel.app/menu</td></tr>
+  <tr><td>Admin Login</td><td>https://hindustan-restaurant-one.vercel.app/login</td></tr>
+  <tr><td>Admin Dashboard</td><td>https://hindustan-restaurant-one.vercel.app/admin</td></tr>
+  <tr><td>Media Library</td><td>https://hindustan-restaurant-one.vercel.app/admin/media</td></tr>
+  <tr><td>Menu Items</td><td>https://hindustan-restaurant-one.vercel.app/admin/items</td></tr>
+  <tr><td>Categories</td><td>https://hindustan-restaurant-one.vercel.app/admin/categories</td></tr>
+  <tr><td>Settings</td><td>https://hindustan-restaurant-one.vercel.app/admin/settings</td></tr>
+  <tr><td>QR Stands</td><td>https://hindustan-restaurant-one.vercel.app/admin/qrcode</td></tr>
+  <tr><td>Users</td><td>https://hindustan-restaurant-one.vercel.app/admin/users</td></tr>
+  <tr><td>Backup</td><td>https://hindustan-restaurant-one.vercel.app/admin/backup</td></tr>
+</table>
+
+<h2>2. Admin Login Credentials (Default)</h2>
+<div class="box">
+  <p><strong>Email:</strong> <code>admin@hindustanrestaurant.com</code></p>
+  <p><strong>Password:</strong> <code>admin123</code></p>
+  <p class="warn">⚠️ Change this password after first login via "My Account". Do not share with unauthorized people.</p>
+</div>
+
+<h2>3. What this system does</h2>
+<ul>
+  <li>A digital QR menu for HINDUSTAN RESTAURANT (33 categories, 304 dishes).</li>
+  <li>Customers scan a QR code → open the menu on their phone → browse dishes with photos, prices, categories.</li>
+  <li>No ordering, no cart, no payment — view-only menu.</li>
+  <li>Admin panel to manage categories, dishes, images, settings, users, QR stands, backups.</li>
+  <li>All changes reflect live on the customer menu instantly.</li>
+</ul>
+
+<h2>4. How to use the Admin Panel</h2>
+
+<h3>Login</h3>
+<p>Open the Admin Login URL above → enter email & password → click Login (eye icon shows/hides password).</p>
+
+<h3>Dashboard</h3>
+<p>Shows counts: categories, dishes, images, missing images. Click any stat card to jump to that section.</p>
+
+<h3>Menu Categories (/admin/categories)</h3>
+<ul>
+  <li><strong>Add:</strong> "+ Add Category" → name → save.</li>
+  <li><strong>Edit:</strong> click category → change name/image → Save.</li>
+  <li><strong>Reorder:</strong> drag ☰ handle → "Save Order".</li>
+  <li><strong>Delete:</strong> Delete (removes category + its dishes).</li>
+</ul>
+
+<h3>Menu Items / Dishes (/admin/items)</h3>
+<ul>
+  <li>Filter by category or search by dish name.</li>
+  <li><strong>Edit:</strong> "Edit" → name, price, category, position, image → "Save Changes".</li>
+  <li><strong>Add:</strong> "+ Add New Item" → name, category, price, image → Add.</li>
+  <li><strong>Delete:</strong> Delete.</li>
+  <li><strong>Reorder:</strong> drag within category → "Save Order".</li>
+  <li><strong>Upload image:</strong> in edit modal, pick file → "Upload" → "Save Changes".</li>
+</ul>
+
+<h3>Media Library (/admin/media)</h3>
+<ul>
+  <li>View all dish images (baked-in + uploaded).</li>
+  <li>Search by dish name or filename; filter by category/status; sort.</li>
+  <li><strong>Replace:</strong> Replace → pick new file → dish image updates everywhere automatically.</li>
+  <li><strong>Delete:</strong> Delete (dish shows placeholder).</li>
+  <li><strong>Bulk delete:</strong> select multiple → "Delete Selected".</li>
+  <li><strong>Upload new:</strong> "Upload" button at top.</li>
+</ul>
+
+<h3>Restaurant Settings (/admin/settings)</h3>
+<ul>
+  <li>Change name, phone 1, phone 2, logo. Upload a new logo.</li>
+  <li>Developer credit is locked (not editable).</li>
+</ul>
+
+<h3>User Management (/admin/users) — Admin only</h3>
+<ul>
+  <li>Create users (admin or limited). Edit name, email, role, password. Delete (cannot delete last admin).</li>
+</ul>
+
+<h3>QR Code & Stands (/admin/qrcode)</h3>
+<ul>
+  <li>Preview the table stand card. Enter Table Number for custom cards.</li>
+  <li><strong>Download PNG</strong> — full high-res stand design.</li>
+  <li><strong>Download PDF</strong> — print-ready A4.</li>
+  <li><strong>Print</strong> — prints only the stand card.</li>
+  <li>Place printed card in acrylic table stands.</li>
+</ul>
+
+<h3>Backup & Restore (/admin/backup)</h3>
+<ul>
+  <li><strong>Create Backup:</strong> downloads ZIP with all menu data + images.</li>
+  <li><strong>Restore:</strong> upload a backup ZIP to restore everything.</li>
+</ul>
+
+<h3>My Account (/admin/account)</h3>
+<p>Change your own name, email, password.</p>
+
+<h2>5. Customer flow</h2>
+<ol>
+  <li>Customer scans the QR code on the table.</li>
+  <li>The digital menu opens in their browser.</li>
+  <li>They browse categories and dishes, see photos and prices.</li>
+  <li>They can tap a phone number to call the restaurant.</li>
+  <li>No ordering or payment — view only.</li>
+</ol>
+
+<h2>6. Important notes</h2>
+<ul>
+  <li><strong>Phone numbers:</strong> +91 8879396241 and 022-23478066.</li>
+  <li><strong>Images:</strong> 304 dish images built in. Replace any via Media Library or Dish Management — changes reflect live.</li>
+  <li><strong>Cache:</strong> If a change doesn't show, click 🧹 Clear Cache in the admin top bar / sidebar.</li>
+  <li><strong>Supabase:</strong> Database + image storage on Supabase (free tier). The <code>menu-images</code> storage bucket is auto-created on first upload.</li>
+  <li>Do not delete the last admin user.</li>
+  <li>Developer credit is locked and cannot be edited.</li>
+</ul>
+
+<h2>7. Handover checklist</h2>
+<ul>
+  <li>[ ] Change the default admin password.</li>
+  <li>[ ] Add real staff users via User Management.</li>
+  <li>[ ] Test scanning the QR code on a phone.</li>
+  <li>[ ] Print table stands and place on tables.</li>
+  <li>[ ] Verify the menu shows correct prices and images.</li>
+  <li>[ ] Create a backup before making bulk changes.</li>
+</ul>
+
+<p style="margin-top:40px; color:#888; font-size:0.85em;">
+  System developed by Salman Furniturewala — +91 7303321019 · Last updated: November 2026
+</p>
+
+<div class="no-print" style="margin-top:30px; text-align:center;">
+  <button onclick="window.print()" style="padding:10px 24px; background:#d4af37; color:#0a0a0a; font-weight:bold; border:none; border-radius:8px; cursor:pointer; font-size:14px;">
+    🖨️ Print / Save as PDF
+  </button>
+</div>
+</body>
+</html>

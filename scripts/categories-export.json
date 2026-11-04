@@ -1,0 +1,332 @@
+﻿[
+    {
+        "id":  "cat-chicken-soups",
+        "name":  "CHICKEN SOUPS",
+        "slug":  "chicken-soups",
+        "sort_order":  1,
+        "image_url":  null,
+        "is_active":  true,
+        "created_at":  "2026-11-01T07:02:47.479Z",
+        "updated_at":  "2026-11-01T08:57:02.102Z"
+    },
+    {
+        "id":  "cat-veg-soups",
+        "name":  "VEG SOUPS",
+        "slug":  "veg-soups",
+        "sort_order":  2,
+        "image_url":  null,
+        "is_active":  true,
+        "created_at":  "2026-11-01T07:02:47.479Z",
+        "updated_at":  "2026-11-01T08:57:02.102Z"
+    },
+    {
+        "id":  "cat-chicken-starters",
+        "name":  "CHICKEN STARTERS",
+        "slug":  "chicken-starters",
+        "sort_order":  3,
+        "image_url":  null,
+        "is_active":  true,
+        "created_at":  "2026-11-01T07:02:47.479Z",
+        "updated_at":  "2026-11-01T08:57:02.102Z"
+    },
+    {
+        "id":  "cat-veg-starter",
+        "name":  "VEG STARTER",
+        "slug":  "veg-starter",
+        "sort_order":  4,
+        "image_url":  null,
+        "is_active":  true,
+        "created_at":  "2026-11-01T07:02:47.479Z",
+        "updated_at":  "2026-11-01T08:57:02.102Z"
+    },
+    {
+        "id":  "cat-tandoori-chicken-starter",
+        "name":  "TANDOORI CHICKEN STARTER",
+        "slug":  "tandoori-chicken-starter",
+        "sort_order":  5,
+        "image_url":  null,
+        "is_active":  true,
+        "created_at":  "2026-11-01T07:02:47.479Z",
+        "updated_at":  "2026-11-01T09:14:10.516Z"
+    },
+    {
+        "id":  "cat-hindustan-platers",
+        "name":  "HINDUSTAN PLATERS",
+        "slug":  "hindustan-platers",
+        "sort_order":  6,
+        "image_url":  null,
+        "is_active":  true,
+        "created_at":  "2026-11-01T07:02:47.479Z",
+        "updated_at":  "2026-11-01T08:57:02.102Z"
+    },
+    {
+        "id":  "cat-tawa-fry",
+        "name":  "TAWA FRY",
+        "slug":  "tawa-fry",
+        "sort_order":  7,
+        "image_url":  null,
+        "is_active":  true,
+        "created_at":  "2026-11-01T07:02:47.479Z",
+        "updated_at":  "2026-11-01T08:57:02.102Z"
+    },
+    {
+        "id":  "cat-chicken",
+        "name":  "CHICKEN",
+        "slug":  "chicken",
+        "sort_order":  8,
+        "image_url":  null,
+        "is_active":  true,
+        "created_at":  "2026-11-01T07:02:47.479Z",
+        "updated_at":  "2026-11-01T08:57:02.102Z"
+    },
+    {
+        "id":  "cat-mutton",
+        "name":  "MUTTON",
+        "slug":  "mutton",
+        "sort_order":  9,
+        "image_url":  null,
+        "is_active":  true,
+        "created_at":  "2026-11-01T07:02:47.479Z",
+        "updated_at":  "2026-11-01T08:57:02.102Z"
+    },
+    {
+        "id":  "cat-veg-currys",
+        "name":  "VEG CURRYS",
+        "slug":  "veg-currys",
+        "sort_order":  10,
+        "image_url":  null,
+        "is_active":  true,
+        "created_at":  "2026-11-01T07:02:47.479Z",
+        "updated_at":  "2026-11-01T08:57:02.102Z"
+    },
+    {
+        "id":  "cat-paneer-currys",
+        "name":  "PANEER CURRYS",
+        "slug":  "paneer-currys",
+        "sort_order":  11,
+        "image_url":  null,
+        "is_active":  true,
+        "created_at":  "2026-11-01T07:02:47.479Z",
+        "updated_at":  "2026-11-01T08:57:02.102Z"
+    },
+    {
+        "id":  "cat-egg-currys",
+        "name":  "EGG CURRYS",
+        "slug":  "egg-currys",
+        "sort_order":  12,
+        "image_url":  null,
+        "is_active":  true,
+        "created_at":  "2026-11-01T07:02:47.479Z",
+        "updated_at":  "2026-11-01T08:57:02.102Z"
+    },
+    {
+        "id":  "cat-salad-raita-papad",
+        "name":  "SALAD / RAITA / PAPAD",
+        "slug":  "salad-raita-papad",
+        "sort_order":  13,
+        "image_url":  null,
+        "is_active":  true,
+        "created_at":  "2026-11-01T07:02:47.479Z",
+        "updated_at":  "2026-11-01T08:57:02.102Z"
+    },
+    {
+        "id":  "cat-chinese-gravy",
+        "name":  "CHINESE GRAVY",
+        "slug":  "chinese-gravy",
+        "sort_order":  14,
+        "image_url":  null,
+        "is_active":  true,
+        "created_at":  "2026-11-01T07:02:47.479Z",
+        "updated_at":  "2026-11-01T08:57:02.102Z"
+    },
+    {
+        "id":  "cat-veg-chinese-gravy",
+        "name":  "VEG CHINESE GRAVY",
+        "slug":  "veg-chinese-gravy",
+        "sort_order":  15,
+        "image_url":  null,
+        "is_active":  true,
+        "created_at":  "2026-11-01T07:02:47.479Z",
+        "updated_at":  "2026-11-01T08:57:02.102Z"
+    },
+    {
+        "id":  "cat-hindustan-special-schezwan-items",
+        "name":  "HINDUSTAN SPECIAL SCHEZWAN ITEMS",
+        "slug":  "hindustan-special-schezwan-items",
+        "sort_order":  16,
+        "image_url":  null,
+        "is_active":  true,
+        "created_at":  "2026-11-01T07:02:47.479Z",
+        "updated_at":  "2026-11-01T08:57:02.102Z"
+    },
+    {
+        "id":  "cat-biryani-and-pulav",
+        "name":  "BIRYANI AND PULAV",
+        "slug":  "biryani-and-pulav",
+        "sort_order":  17,
+        "image_url":  null,
+        "is_active":  true,
+        "created_at":  "2026-11-01T07:02:47.479Z",
+        "updated_at":  "2026-11-01T08:57:02.102Z"
+    },
+    {
+        "id":  "cat-deserts",
+        "name":  "DESERTS",
+        "slug":  "deserts",
+        "sort_order":  18,
+        "image_url":  null,
+        "is_active":  true,
+        "created_at":  "2026-11-01T07:02:47.479Z",
+        "updated_at":  "2026-11-01T08:57:02.102Z"
+    },
+    {
+        "id":  "cat-tea-and-coldrinks",
+        "name":  "TEA AND COLDRINKS",
+        "slug":  "tea-and-coldrinks",
+        "sort_order":  19,
+        "image_url":  null,
+        "is_active":  true,
+        "created_at":  "2026-11-01T07:02:47.479Z",
+        "updated_at":  "2026-11-01T08:57:02.102Z"
+    },
+    {
+        "id":  "cat-khichda",
+        "name":  "KHICHDA",
+        "slug":  "khichda",
+        "sort_order":  20,
+        "image_url":  null,
+        "is_active":  true,
+        "created_at":  "2026-11-01T07:02:47.479Z",
+        "updated_at":  "2026-11-01T08:57:02.102Z"
+    },
+    {
+        "id":  "cat-seekh",
+        "name":  "SEEKH",
+        "slug":  "seekh",
+        "sort_order":  21,
+        "image_url":  null,
+        "is_active":  true,
+        "created_at":  "2026-11-01T07:02:47.479Z",
+        "updated_at":  "2026-11-01T08:57:02.102Z"
+    },
+    {
+        "id":  "cat-hindustan-keema",
+        "name":  "HINDUSTAN KEEMA",
+        "slug":  "hindustan-keema",
+        "sort_order":  22,
+        "image_url":  null,
+        "is_active":  true,
+        "created_at":  "2026-11-01T07:02:47.479Z",
+        "updated_at":  "2026-11-01T08:57:02.102Z"
+    },
+    {
+        "id":  "cat-hindustan-kebab",
+        "name":  "HINDUSTAN KEBAB",
+        "slug":  "hindustan-kebab",
+        "sort_order":  23,
+        "image_url":  null,
+        "is_active":  true,
+        "created_at":  "2026-11-01T07:02:47.479Z",
+        "updated_at":  "2026-11-01T08:57:02.102Z"
+    },
+    {
+        "id":  "cat-sea-foods",
+        "name":  "SEA FOODS",
+        "slug":  "sea-foods",
+        "sort_order":  24,
+        "image_url":  null,
+        "is_active":  true,
+        "created_at":  "2026-11-01T07:02:47.479Z",
+        "updated_at":  "2026-11-01T08:57:02.102Z"
+    },
+    {
+        "id":  "cat-extra",
+        "name":  "EXTRA",
+        "slug":  "extra",
+        "sort_order":  25,
+        "image_url":  null,
+        "is_active":  true,
+        "created_at":  "2026-11-01T07:02:47.479Z",
+        "updated_at":  "2026-11-01T08:57:02.102Z"
+    },
+    {
+        "id":  "cat-roti-mein",
+        "name":  "ROTI MEIN",
+        "slug":  "roti-mein",
+        "sort_order":  26,
+        "image_url":  null,
+        "is_active":  true,
+        "created_at":  "2026-11-01T07:02:47.479Z",
+        "updated_at":  "2026-11-01T08:57:02.102Z"
+    },
+    {
+        "id":  "cat-veg-chinese-rice",
+        "name":  "VEG CHINESE RICE",
+        "slug":  "veg-chinese-rice",
+        "sort_order":  27,
+        "image_url":  null,
+        "is_active":  true,
+        "created_at":  "2026-11-01T07:02:47.479Z",
+        "updated_at":  "2026-11-01T08:57:02.102Z"
+    },
+    {
+        "id":  "cat-veg-chinese-noodles",
+        "name":  "VEG CHINESE NOODLES",
+        "slug":  "veg-chinese-noodles",
+        "sort_order":  28,
+        "image_url":  null,
+        "is_active":  true,
+        "created_at":  "2026-11-01T07:02:47.479Z",
+        "updated_at":  "2026-11-01T08:57:02.102Z"
+    },
+    {
+        "id":  "cat-kepsa-item",
+        "name":  "KEPSA ITEM",
+        "slug":  "kepsa-item",
+        "sort_order":  29,
+        "image_url":  null,
+        "is_active":  true,
+        "created_at":  "2026-11-01T07:02:47.479Z",
+        "updated_at":  "2026-11-01T08:57:02.102Z"
+    },
+    {
+        "id":  "cat-chicken-chinese-rice-with-gravy",
+        "name":  "CHICKEN CHINESE RICE WITH GRAVY",
+        "slug":  "chicken-chinese-rice-with-gravy",
+        "sort_order":  30,
+        "image_url":  null,
+        "is_active":  true,
+        "created_at":  "2026-11-01T07:02:47.479Z",
+        "updated_at":  "2026-11-01T08:57:02.102Z"
+    },
+    {
+        "id":  "cat-chicken-chinese-rice",
+        "name":  "CHICKEN CHINESE RICE",
+        "slug":  "chicken-chinese-rice",
+        "sort_order":  31,
+        "image_url":  null,
+        "is_active":  true,
+        "created_at":  "2026-11-01T07:02:47.479Z",
+        "updated_at":  "2026-11-01T08:57:02.102Z"
+    },
+    {
+        "id":  "cat-chicken-chinese-noodles",
+        "name":  "CHICKEN CHINESE NOODLES",
+        "slug":  "chicken-chinese-noodles",
+        "sort_order":  32,
+        "image_url":  null,
+        "is_active":  true,
+        "created_at":  "2026-11-01T07:02:47.479Z",
+        "updated_at":  "2026-11-01T08:57:02.102Z"
+    },
+    {
+        "id":  "cat-chicken-chinese-noodles-with-gravy",
+        "name":  "CHICKEN CHINESE NOODLES WITH GRAVY",
+        "slug":  "chicken-chinese-noodles-with-gravy",
+        "sort_order":  33,
+        "image_url":  null,
+        "is_active":  true,
+        "created_at":  "2026-11-01T07:02:47.479Z",
+        "updated_at":  "2026-11-01T08:57:02.102Z"
+    }
+]
