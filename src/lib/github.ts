@@ -42,7 +42,7 @@ function githubHeaders(): Record<string, string> {
   return {
     Authorization: `token ${GITHUB_TOKEN}`,
     Accept: 'application/vnd.github+json',
-    'X-GitHub-Api-Version': '2024-11-28',
+    'X-GitHub-Api-Version': '2026-03-10',
     'User-Agent': 'Patel-Restaurant-Admin',
     'Content-Type': 'application/json',
   };
