@@ -70,11 +70,29 @@ function toItemType(i: DataStoreItem): MenuItem {
  * data/restaurant.json) with a 15-second server-side cache.
  */
 export async function getPublicMenu(): Promise<LocalMenuStore> {
-  const [menuData, categoriesData, restaurantData] = await Promise.all([
-    readMenu(),
-    readCategories(),
-    readRestaurant(),
-  ]);
+  const [menuResult, categoriesResult, restaurantResult] =
+    await Promise.allSettled([
+      readMenu(),
+      readCategories(),
+      readRestaurant(),
+    ]);
+
+  const menuData =
+    menuResult.status === 'fulfilled' ? menuResult.value : null;
+  const categoriesData =
+    categoriesResult.status === 'fulfilled' ? categoriesResult.value : null;
+  const restaurantData =
+    restaurantResult.status === 'fulfilled' ? restaurantResult.value : null;
+
+  if (menuResult.status === 'rejected') {
+    console.error('Failed to load menu data:', menuResult.reason);
+  }
+  if (categoriesResult.status === 'rejected') {
+    console.error('Failed to load categories:', categoriesResult.reason);
+  }
+  if (restaurantResult.status === 'rejected') {
+    console.error('Failed to load restaurant settings:', restaurantResult.reason);
+  }
 
   const rawCategories = categoriesData?.categories || [];
   const rawItems = menuData?.items || [];
