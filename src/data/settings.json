@@ -1,0 +1,16 @@
+{
+  "settings": {
+    "currency": "INR",
+    "theme": "dark",
+    "menuLayout": "grid",
+    "orderingSettings": {},
+    "whatsappOrdering": true,
+    "imageSettings": {
+      "maxWidth": 1024,
+      "maxHeight": 1024,
+      "webpQuality": 80
+    },
+    "createdAt": "2026-11-05T13:27:07.438Z",
+    "updatedAt": "2026-11-05T13:27:07.438Z"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "restaurant": {
+    "name": "PATEL RESTAURANT",
+    "logo": "/logo.png",
+    "address": "Patel Restaurant",
+    "phone": "+91 0000000000",
+    "whatsapp": "",
+    "openingHours": null,
+    "contactEmail": null,
+    "socialLinks": null,
+    "createdAt": "2026-11-05T13:27:07.437Z",
+    "updatedAt": "2026-11-05T13:27:07.437Z"
+  }
+}

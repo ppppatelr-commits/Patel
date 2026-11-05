@@ -1,20 +1,16 @@
 /**
- * Public menu data loader — GitHub-backed.
+ * Public menu data loader — baked-in data.
  *
- * Reads menu data from the private GitHub content repository via the
- * data-store layer, then converts to the @/types format used by frontend
- * components.
+ * Reads menu data from local JSON files baked into the application at build time.
+ * This avoids runtime dependency on the GitHub API for serving customers.
  *
- * Replaces the previous Supabase-based implementation.
+ * Admin changes still commit to the private GitHub content repository (PR-),
+ * and can be pulled in on redeploy.
  */
 
-import {
-  readMenu,
-  readCategories,
-  readRestaurant,
-  type MenuItem as DataStoreItem,
-  type MenuCategory as DataStoreCategory,
-} from '@/lib/data-store';
+import categoriesData from '@/data/categories.json';
+import menuData from '@/data/menu.json';
+import restaurantData from '@/data/restaurant.json';
 import type {
   MenuCategory,
   MenuItem,
@@ -29,9 +25,9 @@ export interface LocalMenuStore {
 }
 
 /**
- * Convert a data-store category to @/types format.
+ * Convert a local category to @/types format.
  */
-function toCategoryType(c: DataStoreCategory): MenuCategory {
+function toCategoryType(c: any): MenuCategory {
   return {
     id: c.id,
     name: c.name,
@@ -45,9 +41,9 @@ function toCategoryType(c: DataStoreCategory): MenuCategory {
 }
 
 /**
- * Convert a data-store item to @/types format.
+ * Convert a local item to @/types format.
  */
-function toItemType(i: DataStoreItem): MenuItem {
+function toItemType(i: any): MenuItem {
   return {
     id: i.id,
     category_id: i.categoryId,
@@ -66,45 +62,17 @@ function toItemType(i: DataStoreItem): MenuItem {
 /**
  * Load the live menu for public pages and the menu API.
  *
- * Reads from GitHub JSON files (data/menu.json, data/categories.json,
- * data/restaurant.json) with a 15-second server-side cache.
+ * Data is baked into the application from the local JSON files imported above.
+ * These files come from the content repository (PR-) and are updated on redeploy.
  */
 export async function getPublicMenu(): Promise<LocalMenuStore> {
-  const [menuResult, categoriesResult, restaurantResult] =
-    await Promise.allSettled([
-      readMenu(),
-      readCategories(),
-      readRestaurant(),
-    ]);
-
-  const menuData =
-    menuResult.status === 'fulfilled' ? menuResult.value : null;
-  const categoriesData =
-    categoriesResult.status === 'fulfilled' ? categoriesResult.value : null;
-  const restaurantData =
-    restaurantResult.status === 'fulfilled' ? restaurantResult.value : null;
-
-  if (menuResult.status === 'rejected') {
-    console.error('Failed to load menu data:', menuResult.reason);
-  }
-  if (categoriesResult.status === 'rejected') {
-    console.error('Failed to load categories:', categoriesResult.reason);
-  }
-  if (restaurantResult.status === 'rejected') {
-    console.error('Failed to load restaurant settings:', restaurantResult.reason);
-  }
-
-  const rawCategories = categoriesData?.categories || [];
-  const rawItems = menuData?.items || [];
-  const restaurant = (restaurantData?.restaurant as {
-    name?: string;
-    phone?: string;
-    whatsapp?: string;
-    address?: string;
-    logo?: string;
-    createdAt?: string;
-    updatedAt?: string;
-  }) || {};
+  const rawCategories = Array.isArray(categoriesData?.categories)
+    ? categoriesData.categories
+    : [];
+  const rawItems = Array.isArray(menuData?.items)
+    ? menuData.items
+    : [];
+  const restaurant = restaurantData?.restaurant || {};
 
   // Normalize category sort orders
   const normalizedCategories = rawCategories
@@ -116,10 +84,7 @@ export async function getPublicMenu(): Promise<LocalMenuStore> {
     }));
 
   // Build category map for item normalization
-  const catById = new Map(normalizedCategories.map((c) => [c.id, c]));
-
-  // Normalize item sort orders within each category
-  const itemsByCat = new Map<string, DataStoreItem[]>();
+  const itemsByCat = new Map<string, any[]>();
   for (const item of rawItems) {
     if (!itemsByCat.has(item.categoryId)) {
       itemsByCat.set(item.categoryId, []);
@@ -127,7 +92,7 @@ export async function getPublicMenu(): Promise<LocalMenuStore> {
     itemsByCat.get(item.categoryId)!.push({ ...item });
   }
 
-  const normalizedItems: DataStoreItem[] = [];
+  const normalizedItems: any[] = [];
   for (const catItems of itemsByCat.values()) {
     catItems.sort((a, b) => (a.sortOrder || 999) - (b.sortOrder || 999));
     catItems.forEach((it, idx) => {
