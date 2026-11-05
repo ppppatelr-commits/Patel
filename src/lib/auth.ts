@@ -212,7 +212,7 @@ export async function verifyAdminCredentials(
     return null;
   }
 
-  if (email.toLowerCase() !== adminEmail.toLowerCase()) {
+  if (email.trim().toLowerCase() !== adminEmail.trim().toLowerCase()) {
     return null;
   }
 
