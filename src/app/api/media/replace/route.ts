@@ -1,8 +1,15 @@
+/**
+ * Media Replace API — GitHub-backed.
+ * Replaces an existing dish image in the private GitHub repository.
+ */
+
 import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs/promises';
-import path from 'path';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
-import { isSafeDishesPath, archiveExistingImage } from '@/lib/image-storage';
+import {
+  replaceDishImage,
+  dishImagePath,
+  sanitizeCategorySlug,
+  sanitizeDishFilename,
+} from '@/lib/image-store';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,12 +18,18 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
     const file = formData.get('file') as File | null;
     const rawPath = String(formData.get('path') || '');
+    const category = (formData.get('category') as string) || 'general';
+    const dishName = (formData.get('dish') as string) || 'dish';
 
     if (!file) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
-    if (!rawPath || !isSafeDishesPath(rawPath)) {
-      return NextResponse.json({ error: 'A valid image path is required.' }, { status: 400 });
+
+    if (!rawPath) {
+      return NextResponse.json(
+        { error: 'A valid image path is required.' },
+        { status: 400 }
+      );
     }
 
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
@@ -26,84 +39,44 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
     if (file.size > 5 * 1024 * 1024) {
-      return NextResponse.json({ error: 'File too large. Max 5MB' }, { status: 400 });
-    }
-
-    const clean = rawPath
-      .replace(/\\/g, '/')
-      .replace(/^\/+/, '')
-      .replace(/^public\//, '');
-    const fullPath = path.join(process.cwd(), 'public', clean);
-    const buffer = Buffer.from(await file.arrayBuffer());
-
-    await fs.mkdir(path.dirname(fullPath), { recursive: true }).catch(() => {});
-
-    // Keep the old image in the Media Library instead of destroying it (best-effort).
-    const archivedUrl = await archiveExistingImage(rawPath);
-
-    // Try to persist locally (best-effort on read-only hosts).
-    let localSaved = false;
-    try {
-      await fs.writeFile(fullPath, buffer);
-      localSaved = true;
-    } catch {
-      localSaved = false;
-    }
-
-    // Keep Supabase Storage in sync when it is configured.
-    const supabase = createServerSupabaseClient() as any;
-    let storageUrl: string | null = null;
-    let storageError: string | null = null;
-    if (supabase) {
-      try {
-        try {
-          const { data: buckets } = await supabase.storage.listBuckets();
-          if (!(buckets || []).some((b: any) => b.name === 'menu-images')) {
-            await supabase.storage.createBucket('menu-images', { public: true });
-          }
-        } catch { /* ignore */ }
-        const storagePath = clean.replace(/^media\/dishes\//, 'dishes/');
-        const { error } = await supabase.storage.from('menu-images').upload(storagePath, buffer, {
-          contentType: file.type,
-          upsert: true,
-        });
-        if (error) {
-          storageError = error.message || String(error);
-        } else {
-          storageUrl = supabase.storage.from('menu-images').getPublicUrl(storagePath).data.publicUrl;
-          // Propagate: update all dishes that use this image so they show the new image.
-          try {
-            await supabase
-              .from('menu_items')
-              .update({ image_url: storageUrl })
-              .eq('image_filename', path.basename(clean));
-          } catch { /* best-effort */ }
-        }
-      } catch (e) {
-        storageError = (e as Error).message;
-      }
-    } else {
-      storageError = 'Supabase is not configured on this deployment.';
-    }
-
-    if (!localSaved && !storageUrl) {
       return NextResponse.json(
-        { error: 'Replace failed: storage is read-only on this host and Supabase Storage is unavailable.', details: storageError || 'Unknown error' },
-        { status: 500 }
+        { error: 'File too large. Max 5MB' },
+        { status: 400 }
       );
     }
 
+    // Parse category and dish slug from path
+    // Path format: media/dishes/[category]/[dish].webp
+    const clean = rawPath.replace(/\\/g, '/').replace(/^\/+/, '').replace(/^public\//, '');
+    const parts = clean.split('/');
+    // Expect: media, dishes, category, filename
+    const catSlug = parts.length >= 3 ? sanitizeCategorySlug(parts[2]) : sanitizeCategorySlug(category);
+    const fileName = parts.length >= 4 ? sanitizeDishFilename(parts[3]) : sanitizeDishFilename(dishName);
+    // Remove extension from dish slug
+    const dishSlug = fileName.replace(/\.(webp|png|jpe?g|gif)$/i, '');
+
+    const buffer = Buffer.from(await file.arrayBuffer());
+
+    const result = await replaceDishImage(
+      catSlug,
+      dishSlug,
+      buffer,
+      file.type,
+      `Replace image: ${dishSlug} (${catSlug})`
+    );
+
     return NextResponse.json({
       success: true,
-      fileUrl: storageUrl || `/${clean}`,
-      filename: path.basename(clean),
-      archivedUrl,
-      size: file.size,
+      filename: result.path.split('/').pop(),
+      filePath: result.path,
+      fileUrl: result.url,
+      size: result.sizeBytes,
       mimeType: file.type,
-      storageUrl,
     });
   } catch (err) {
+    console.error('Media replace error:', err);
     return NextResponse.json(
       { error: 'Replace failed', details: (err as Error).message },
       { status: 500 }

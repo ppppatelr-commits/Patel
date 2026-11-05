@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { createBrowserSupabaseClient, hasSupabaseConfig } from '@/lib/supabase';
 import { MediaItem } from '@/types';
 import { MENU_DATA } from '@/lib/menu-data';
 
@@ -112,15 +111,22 @@ export default function MediaLibraryPage() {
 
   async function renameMedia(id: string, newFilename: string) {
     if (!newFilename.trim()) return;
-    if (!hasSupabaseConfig) {
-      alert('Renaming requires the database (Supabase) to be configured.');
-      return;
+    try {
+      const res = await fetch('/api/media', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, filename: newFilename.trim() }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        alert('Error: ' + (data.error || 'Failed to rename'));
+        return;
+      }
+      setEditItem(null);
+      loadData();
+    } catch (err) {
+      alert('Rename error: ' + (err as Error).message);
     }
-    const supabase = createBrowserSupabaseClient();
-    const { error } = await supabase.from('media_library').update({ filename: newFilename.trim() }).eq('id', id);
-    if (error) { alert('Error: ' + error.message); return; }
-    setEditItem(null);
-    loadData();
   }
 
   function deleteMedia(item: MediaItem) {
@@ -160,15 +166,14 @@ export default function MediaLibraryPage() {
       }
       setReplaceTarget(null);
       setPreviewItem(null);
-      // Update the replaced item in place to point at the new (Supabase) URL so
-      // the thumbnail reflects the change immediately, instead of re-fetching
-      // the stale disk URL.
+      // Update the replaced item in place to point at the new image URL so
+      // the thumbnail reflects the change immediately.
       await loadData();
-      if (data.storageUrl) {
+      if (data.fileUrl) {
         setMedia((prev) =>
           prev.map((m) =>
             m.id === target.id
-              ? { ...m, file_url: data.storageUrl, file_path: data.storageUrl }
+              ? { ...m, file_url: data.fileUrl, file_path: data.filePath }
               : m
           )
         );

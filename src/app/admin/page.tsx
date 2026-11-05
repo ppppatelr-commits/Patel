@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic';
 
 import { redirect } from 'next/navigation';
-import { getSession } from '@/lib/session';
+import { getSession } from '@/lib/auth';
 import { getPublicMenu } from '@/lib/public-menu';
 import { getUnifiedMediaList } from '@/lib/media-list';
 import { MENU_DATA } from '@/lib/menu-data';

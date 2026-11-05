@@ -1,5 +1,17 @@
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+/**
+ * Import API — GitHub-backed.
+ * Imports menu data from MENU_DATA (menu-data.ts) into the GitHub content
+ * repository JSON files.
+ */
+
 import { NextRequest, NextResponse } from 'next/server';
+import {
+  writeMenu,
+  writeCategories,
+  writeRestaurant,
+  MenuItem,
+  MenuCategory,
+} from '@/lib/data-store';
 import { MENU_DATA } from '@/lib/menu-data';
 
 export const dynamic = 'force-dynamic';
@@ -17,10 +29,6 @@ function slugify(text: string): string {
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createServerSupabaseClient();
-    if (!supabase) {
-      return NextResponse.json({ error: 'Supabase is not configured on this deployment.' }, { status: 503 });
-    }
     const body = await request.json();
     const { importEverything = true } = body;
 
@@ -32,63 +40,58 @@ export async function POST(request: NextRequest) {
     let categoriesImported = 0;
     let itemsImported = 0;
 
-    // Import settings
-    const { error: settingsError } = await supabase
-      .from('restaurant_settings')
-      .upsert([{
-        id: '00000000-0000-0000-0000-000000000001',
-        name: MENU_DATA.restaurant.name,
-        phone_1: MENU_DATA.restaurant.phone1,
-        phone_2: MENU_DATA.restaurant.phone2,
-        tagline: MENU_DATA.restaurant.tagline,
-        address: MENU_DATA.restaurant.address,
-        developer_name: MENU_DATA.restaurant.developerName,
-        developer_phone: MENU_DATA.restaurant.developerPhone,
-        developer_credit_locked: true,
-      }]);
+    // ── Import restaurant settings ──
+    const restaurantData = {
+      restaurant: {
+        name: MENU_DATA.restaurant.name || 'Patel Restaurant',
+        logo: '/logo.png',
+        address: MENU_DATA.restaurant.address || '',
+        phone: MENU_DATA.restaurant.phone1 || '',
+        whatsapp: MENU_DATA.restaurant.phone2 || '',
+        openingHours: null,
+        contactEmail: null,
+        socialLinks: null,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+    };
 
-    if (settingsError) {
-      errors.push(`Settings: ${settingsError.message}`);
+    try {
+      await writeRestaurant(restaurantData);
+    } catch (err) {
+      errors.push(`Settings: ${(err as Error).message}`);
     }
 
-    // Import categories in exact PDF order
-    const categoryMap = new Map<string, string>();
+    // ── Import categories ──
+    const categories: MenuCategory[] = MENU_DATA.categories.map((cat, index) => ({
+      id: `cat-${slugify(cat.name)}`,
+      name: cat.name,
+      slug: slugify(cat.name),
+      description: null,
+      image: null,
+      sortOrder: cat.sort_order ?? index + 1,
+      isActive: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    }));
 
-    // Pre-load any categories that already exist so re-running the import is safe.
-    const { data: existingCats } = await supabase.from('menu_categories').select('id, name');
-    for (const c of existingCats || []) {
-      categoryMap.set(c.name, c.id);
+    try {
+      await writeCategories({ categories });
+      categoriesImported = categories.length;
+    } catch (err) {
+      errors.push(`Categories: ${(err as Error).message}`);
     }
 
-    for (const cat of MENU_DATA.categories) {
-      if (categoryMap.has(cat.name)) {
-        categoriesImported++;
-        continue;
-      }
-      try {
-        const slug = slugify(cat.name);
-        const { data, error } = await supabase
-          .from('menu_categories')
-          .insert([{ name: cat.name, slug, sort_order: cat.sort_order, is_active: true }])
-          .select('id')
-          .single();
+    // ── Import items ──
+    const categoryMap = new Map(categories.map((c) => [c.name, c.id]));
+    const items: MenuItem[] = [];
 
-        if (error) {
-          errors.push(`Category ${cat.name}: ${error.message}`);
-        } else if (data) {
-          categoryMap.set(cat.name, data.id);
-          categoriesImported++;
-        }
-      } catch (err) {
-        errors.push(`Category ${cat.name}: ${err}`);
-      }
-    }
+    const itemsRecord = MENU_DATA.items as unknown as Record<
+      string,
+      { name: string; price: number; description?: string }[]
+    >;
 
-    // Pre-load existing items for this run so re-importing is idempotent.
-    const { data: existingItems } = await supabase.from('menu_items').select('category_id, name');
-    const existingItemKeys = new Set((existingItems || []).map((it: any) => `${it.category_id}::${it.name}`));
-
-    const itemsRecord = MENU_DATA.items as unknown as Record<string, { name: string; price: number; description?: string }[]>;
+    let globalSortIndex = 0;
     for (const [catName, catItems] of Object.entries(itemsRecord)) {
       const categoryId = categoryMap.get(catName);
       if (!categoryId) {
@@ -98,34 +101,28 @@ export async function POST(request: NextRequest) {
 
       let sortIndex = 0;
       for (const item of catItems) {
-        if (existingItemKeys.has(`${categoryId}::${item.name}`)) {
-          sortIndex++;
-          itemsImported++;
-          continue;
-        }
-        try {
-          const filename = slugify(item.name);
-          const { error } = await supabase
-            .from('menu_items')
-            .insert([{
-              category_id: categoryId,
-              name: item.name,
-              description: item.description || null,
-              price: item.price,
-              image_filename: `${filename}.webp`,
-              sort_order: sortIndex++,
-              is_available: true,
-            }]);
-
-          if (error) {
-            errors.push(`Item ${item.name}: ${error.message}`);
-          } else {
-            itemsImported++;
-          }
-        } catch (err) {
-          errors.push(`Item ${item.name}: ${err}`);
-        }
+        const itemSlug = slugify(item.name);
+        items.push({
+          id: `item-${categoryMap.get(catName)?.slice(4) || 'x'}--${itemSlug}${sortIndex > 0 ? `--${sortIndex + 1}` : ''}`,
+          categoryId,
+          name: item.name,
+          description: item.description || null,
+          price: item.price,
+          image: `media/dishes/${slugify(catName)}/${itemSlug}.webp`,
+          isAvailable: true,
+          sortOrder: sortIndex++,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        });
+        globalSortIndex++;
+        itemsImported++;
       }
+    }
+
+    try {
+      await writeMenu({ items });
+    } catch (err) {
+      errors.push(`Items: ${(err as Error).message}`);
     }
 
     return NextResponse.json({
@@ -135,6 +132,9 @@ export async function POST(request: NextRequest) {
       errors,
     });
   } catch (err) {
-    return NextResponse.json({ error: 'Import failed', details: err }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Import failed', details: (err as Error).message },
+      { status: 500 }
+    );
   }
 }

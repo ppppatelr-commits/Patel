@@ -1,294 +1,214 @@
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+/**
+ * Categories API — GitHub-backed.
+ * Reads/writes data/categories.json through the private GitHub repository.
+ */
+
 import { NextRequest, NextResponse } from 'next/server';
-import { readStore, updateStore } from '@/lib/menu-store';
-import { slugify, uniqueId } from '@/lib/menu-seed';
 import {
-  normalizeCategories,
-  insertCategory,
-  moveCategory,
-  removeCategory,
-  reorderCategories,
-} from '@/lib/sort-utils';
-import type { MenuCategory } from '@/types';
+  readCategories,
+  writeCategories,
+  MenuCategory,
+} from '@/lib/data-store';
+import { v4 as uuidv4 } from 'uuid';
 
 export const dynamic = 'force-dynamic';
 
+function slugify(text: string): string {
+  return text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/[\s_-]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
 export async function GET() {
   try {
-    const supabase = createServerSupabaseClient();
-
-    if (!supabase) {
-      const store = await readStore();
-      const categories = normalizeCategories(store.categories);
-      return NextResponse.json(categories);
-    }
-
-    const { data, error } = await supabase
-      .from('menu_categories')
-      .select('*')
-      .order('sort_order', { ascending: true });
-
-    if (error) throw error;
-    return NextResponse.json(data || []);
+    const data = await readCategories();
+    const categories = data?.categories || [];
+    return NextResponse.json(categories);
   } catch (err) {
-    console.error('Categories API error:', err);
-    return NextResponse.json({ error: 'Failed to fetch categories' }, { status: 500 });
+    console.error('Categories GET error:', err);
+    return NextResponse.json(
+      { error: 'Failed to fetch categories' },
+      { status: 500 }
+    );
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createServerSupabaseClient();
     const body = await request.json();
-    const { name, sort_order, image_url, is_active } = body;
+    const { name, sort_order, image_url, is_active, description } = body;
 
     if (!name || !String(name).trim()) {
-      return NextResponse.json({ error: 'Category name is required' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Category name is required' },
+        { status: 400 }
+      );
     }
 
     const trimmedName = String(name).trim();
     const slug = slugify(trimmedName);
     const requestedSort = sort_order ? Number(sort_order) : undefined;
 
-    if (!supabase) {
-      let createdCategory: MenuCategory | null = null;
+    const data = (await readCategories()) || { categories: [] };
+    const existing = data.categories;
 
-      await updateStore((store) => {
-        const id = uniqueId(
-          store.categories.map((c) => c.id),
-          `cat-${slug}`
-        );
-
-        const newCat: MenuCategory = {
-          id,
-          name: trimmedName,
-          slug,
-          sort_order: requestedSort || store.categories.length + 1,
-          image_url: image_url || null,
-          is_active: is_active !== false,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        };
-
-        store.categories = insertCategory(store.categories, newCat, requestedSort);
-        createdCategory = store.categories.find((c) => c.id === id) || newCat;
-      });
-
-      return NextResponse.json(createdCategory);
+    // Check duplicate slug
+    if (existing.some((c) => c.slug === slug)) {
+      return NextResponse.json(
+        { error: 'A category with this name already exists' },
+        { status: 400 }
+      );
     }
 
-    // Supabase cloud mode: maintain sequential ordering
-    const { data: existingRows, error: fetchErr } = await supabase
-      .from('menu_categories')
-      .select('*')
-      .order('sort_order', { ascending: true });
-    if (fetchErr) throw fetchErr;
-
-    const existing: MenuCategory[] = existingRows || [];
-    const newCatObj: MenuCategory = {
-      id: crypto.randomUUID(),
+    const newCat: MenuCategory = {
+      id: uuidv4(),
       name: trimmedName,
       slug,
-      sort_order: requestedSort || existing.length + 1,
-      image_url: image_url || null,
-      is_active: is_active !== false,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
+      sortOrder: requestedSort || existing.length + 1,
+      image: image_url || null,
+      isActive: is_active !== false,
+      description: description || null,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
 
-    const updatedList = insertCategory(existing, newCatObj, requestedSort);
-
-    // Upsert all categories with their new sort orders
-    const { error: upsertErr } = await supabase.from('menu_categories').upsert(
-      updatedList.map((c) => ({
-        id: c.id,
-        name: c.name,
-        slug: c.slug,
-        sort_order: c.sort_order,
-        image_url: c.image_url,
-        is_active: c.is_active,
-        updated_at: new Date().toISOString(),
-      }))
+    const updatedList = [...existing, newCat].sort(
+      (a, b) => a.sortOrder - b.sortOrder
     );
-    if (upsertErr) throw upsertErr;
+    // Renumber sequentially
+    updatedList.forEach((c, idx) => (c.sortOrder = idx + 1));
 
-    return NextResponse.json(updatedList.find((c) => c.slug === slug) || newCatObj);
+    await writeCategories({ categories: updatedList });
+
+    const created = updatedList.find((c) => c.id === newCat.id) || newCat;
+    return NextResponse.json(created);
   } catch (err) {
-    console.error('Error creating category:', err);
-    return NextResponse.json({ error: 'Failed to create category' }, { status: 500 });
+    console.error('Categories POST error:', err);
+    return NextResponse.json(
+      { error: 'Failed to create category' },
+      { status: 500 }
+    );
   }
 }
 
 export async function PUT(request: NextRequest) {
   try {
-    const supabase = createServerSupabaseClient();
     const body = await request.json();
 
-    // Batch reorder support (drag & drop)
+    // Batch reorder
     if (Array.isArray(body.reorder)) {
+      const data = (await readCategories()) || { categories: [] };
       const orderedIds: string[] = body.reorder
         .slice()
-        .sort((a: any, b: any) => (Number(a.sort_order) || 0) - (Number(b.sort_order) || 0))
+        .sort((a: any, b: any) => Number(a.sort_order || 0) - Number(b.sort_order || 0))
         .map((item: any) => item.id);
 
-      if (!supabase) {
-        await updateStore((store) => {
-          store.categories = reorderCategories(store.categories, orderedIds);
-        });
-        return NextResponse.json({ success: true });
+      const catMap = new Map(data.categories.map((c) => [c.id, c]));
+      const result: MenuCategory[] = [];
+      for (const id of orderedIds) {
+        const cat = catMap.get(id);
+        if (cat) result.push(cat);
       }
-
-      const { data: existingRows } = await supabase
-        .from('menu_categories')
-        .select('*');
-      const updatedList = reorderCategories(existingRows || [], orderedIds);
-
-      for (const cat of updatedList) {
-        await supabase
-          .from('menu_categories')
-          .update({ sort_order: cat.sort_order })
-          .eq('id', cat.id);
+      for (const remaining of catMap.values()) {
+        if (!result.find((c) => c.id === remaining.id)) result.push(remaining);
       }
+      result.forEach((c, idx) => (c.sortOrder = idx + 1));
+
+      await writeCategories({ categories: result });
       return NextResponse.json({ success: true });
     }
 
     const { id, ...updates } = body;
-
     if (!id) {
-      return NextResponse.json({ error: 'Category ID is required' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Category ID is required' },
+        { status: 400 }
+      );
     }
 
-    if (!supabase) {
-      let savedCategory: MenuCategory | null = null;
-
-      await updateStore((store) => {
-        const cat = store.categories.find((c) => c.id === id);
-        if (!cat) throw new Error('Category not found');
-
-        if (updates.name !== undefined) cat.name = String(updates.name).trim();
-        if (updates.slug !== undefined) cat.slug = String(updates.slug).trim();
-        if (updates.image_url !== undefined) cat.image_url = updates.image_url || null;
-        if (updates.is_active !== undefined) cat.is_active = updates.is_active !== false;
-        cat.updated_at = new Date().toISOString();
-
-        if (updates.sort_order !== undefined) {
-          const targetSort = Number(updates.sort_order);
-          if (targetSort !== cat.sort_order) {
-            store.categories = moveCategory(store.categories, id, targetSort);
-          } else {
-            store.categories = normalizeCategories(store.categories);
-          }
-        } else {
-          store.categories = normalizeCategories(store.categories);
-        }
-
-        savedCategory = store.categories.find((c) => c.id === id) || cat;
-      });
-
-      return NextResponse.json(savedCategory);
+    const data = (await readCategories()) || { categories: [] };
+    const catIndex = data.categories.findIndex((c) => c.id === id);
+    if (catIndex === -1) {
+      return NextResponse.json(
+        { error: 'Category not found' },
+        { status: 404 }
+      );
     }
 
-    // Supabase mode
-    const { data: existingRows, error: fetchErr } = await supabase
-      .from('menu_categories')
-      .select('*')
-      .order('sort_order', { ascending: true });
-    if (fetchErr) throw fetchErr;
-
-    const existing: MenuCategory[] = existingRows || [];
-    const cat = existing.find((c) => c.id === id);
-    if (!cat) {
-      return NextResponse.json({ error: 'Category not found' }, { status: 404 });
-    }
+    const cat = { ...data.categories[catIndex] };
 
     if (updates.name !== undefined) cat.name = String(updates.name).trim();
     if (updates.slug !== undefined) cat.slug = String(updates.slug).trim();
-    if (updates.image_url !== undefined) cat.image_url = updates.image_url || null;
-    if (updates.is_active !== undefined) cat.is_active = updates.is_active !== false;
-    cat.updated_at = new Date().toISOString();
+    if (updates.image_url !== undefined) cat.image = updates.image_url || null;
+    if (updates.description !== undefined) cat.description = updates.description || null;
+    if (updates.is_active !== undefined) cat.isActive = updates.is_active !== false;
+    cat.updatedAt = new Date().toISOString();
 
-    let updatedList = existing;
     if (updates.sort_order !== undefined) {
       const targetSort = Number(updates.sort_order);
-      updatedList = moveCategory(existing, id, targetSort);
+      if (targetSort !== cat.sortOrder) {
+        data.categories.splice(catIndex, 1);
+        const insertIdx = Math.max(0, Math.min(targetSort - 1, data.categories.length));
+        data.categories.splice(insertIdx, 0, cat);
+        data.categories.forEach((c, idx) => (c.sortOrder = idx + 1));
+      } else {
+        data.categories[catIndex] = cat;
+      }
     } else {
-      updatedList = normalizeCategories(existing);
+      data.categories[catIndex] = cat;
+      data.categories.sort((a, b) => a.sortOrder - b.sortOrder);
     }
 
-    const { error: upsertErr } = await supabase.from('menu_categories').upsert(
-      updatedList.map((c) => ({
-        id: c.id,
-        name: c.name,
-        slug: c.slug,
-        sort_order: c.sort_order,
-        image_url: c.image_url,
-        is_active: c.is_active,
-        updated_at: c.updated_at,
-      }))
-    );
-    if (upsertErr) throw upsertErr;
-
-    return NextResponse.json(updatedList.find((c) => c.id === id) || cat);
+    await writeCategories({ categories: data.categories });
+    const saved = data.categories.find((c) => c.id === id) || cat;
+    return NextResponse.json(saved);
   } catch (err) {
-    const message = (err as Error).message;
+    console.error('Categories PUT error:', err);
     return NextResponse.json(
-      { error: message || 'Failed to update category' },
-      { status: message === 'Category not found' ? 404 : 500 }
+      { error: 'Failed to update category' },
+      { status: 500 }
     );
   }
 }
 
 export async function DELETE(request: NextRequest) {
   try {
-    const supabase = createServerSupabaseClient();
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 
     if (!id) {
-      return NextResponse.json({ error: 'Category ID is required' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Category ID is required' },
+        { status: 400 }
+      );
     }
 
-    if (!supabase) {
-      const removed = await updateStore((store) => {
-        const index = store.categories.findIndex((category) => category.id === id);
-        if (index === -1) return false;
+    const data = (await readCategories()) || { categories: [] };
+    const initialLength = data.categories.length;
+    data.categories = data.categories.filter((c) => c.id !== id);
 
-        store.categories = removeCategory(store.categories, id);
-        // Deleting a category also removes its dishes
-        store.items = store.items.filter((item) => item.category_id !== id);
-        return true;
-      });
-
-      if (!removed) {
-        return NextResponse.json({ error: 'Category not found' }, { status: 404 });
-      }
-
-      return NextResponse.json({ success: true });
+    if (data.categories.length === initialLength) {
+      return NextResponse.json(
+        { error: 'Category not found' },
+        { status: 404 }
+      );
     }
 
-    // Delete category in Supabase
-    const { error: deleteErr } = await supabase.from('menu_categories').delete().eq('id', id);
-    if (deleteErr) throw deleteErr;
+    // Renumber remaining
+    data.categories.sort((a, b) => a.sortOrder - b.sortOrder);
+    data.categories.forEach((c, idx) => (c.sortOrder = idx + 1));
 
-    // Renumber remaining categories sequentially
-    const { data: remaining } = await supabase
-      .from('menu_categories')
-      .select('*')
-      .order('sort_order', { ascending: true });
-
-    if (remaining && remaining.length > 0) {
-      const renumbered = normalizeCategories(remaining);
-      for (const c of renumbered) {
-        await supabase
-          .from('menu_categories')
-          .update({ sort_order: c.sort_order })
-          .eq('id', c.id);
-      }
-    }
-
+    await writeCategories({ categories: data.categories });
     return NextResponse.json({ success: true });
   } catch (err) {
-    console.error('Error deleting category:', err);
-    return NextResponse.json({ error: 'Failed to delete category' }, { status: 500 });
+    console.error('Categories DELETE error:', err);
+    return NextResponse.json(
+      { error: 'Failed to delete category' },
+      { status: 500 }
+    );
   }
 }

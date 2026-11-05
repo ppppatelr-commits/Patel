@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSession, type SessionPayload } from '@/lib/session';
+import { getSession, type SessionPayload } from '@/lib/auth';
 import { deleteUser, updateUser, type UpdateUserInput } from '@/lib/user-store';
 import type { UserRole } from '@/types';
 

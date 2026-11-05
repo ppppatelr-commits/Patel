@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { MENU_DATA } from '@/lib/menu-data';
 import { generateDishImage } from '@/lib/image-generation';
-import { dishImageExists } from '@/lib/image-storage';
+import { dishImageExistsInGitHub as dishImageExists } from '@/lib/image-storage';
 
 export const dynamic = 'force-dynamic';
 

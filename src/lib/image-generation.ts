@@ -1,5 +1,6 @@
 import { MENU_DATA } from '@/lib/menu-data';
-import { saveDishImage, buildDishImageUrl } from '@/lib/image-storage';
+import { saveDishImage } from '@/lib/image-storage';
+import { buildDishImageUrl } from '@/lib/media-paths';
 
 export const BASE_PROMPT = (dish: string) =>
   `ultra-realistic premium restaurant menu food photo of ${dish}. dark charcoal black matte stone surface. soft warm studio lighting. 45 degree angle. matte black ceramic plate. centered. realistic texture. ultra-sharp. square 1:1. no text/logos/watermarks/hands/cutlery.`;
@@ -120,47 +121,8 @@ export async function generateDishImage(dish: string, category?: string | null):
   const filename = saved.filename;
   const fileUrl = saved.fileUrl;
 
-  const supabase = (await import('@/lib/supabase-server')).createServerSupabaseClient() as any;
-
-  let mediaId: string | null = null;
-  let categoryId: string | null = null;
-
-  if (supabase) {
-    const { data: catData } = await supabase.from('menu_categories').select('id, name').ilike('name', catName).single();
-    categoryId = catData?.id || null;
-
-    const { data: itemData } = await supabase.from('menu_items').select('id').ilike('name', finalDish).limit(1).maybeSingle();
-
-    const { data: mediaData, error: mediaError } = await supabase
-      .from('media_library')
-      .upsert([{
-        dish_name: finalDish,
-        filename,
-        original_name: finalDish,
-        file_path: saved.filePath,
-        file_url: fileUrl,
-        mime_type: mimeType,
-        category_id: categoryId,
-        menu_item_id: itemData?.id || null,
-        status: 'active',
-      }], { onConflict: 'filename' })
-      .select()
-      .single();
-
-    if (mediaError) {
-      return { success: false, dish: finalDish, category: catName, prompt, imageUrl: null, filename, filePath: saved.filePath, mediaId: null, categoryId, saved: true, error: `Media record save failed: ${mediaError.message}` };
-    }
-    mediaId = mediaData?.id || null;
-  }
-
-  if (supabase && categoryId) {
-    try {
-      const { error: itemError } = await supabase.from('menu_items').update({ image_filename: filename, image_url: fileUrl }).ilike('name', finalDish);
-      if (itemError) console.warn('Menu item image sync warning:', itemError.message);
-    } catch (err) {
-      console.warn('Menu item image sync skipped:', (err as Error).message);
-    }
-  }
+  // Image is stored in GitHub; no Supabase media record needed.
+  // GitHub commit history serves as the record of image changes.
 
   return {
     success: true,
@@ -170,8 +132,8 @@ export async function generateDishImage(dish: string, category?: string | null):
     imageUrl: fileUrl || buildDishImageUrl(catName, finalDish),
     filename,
     filePath: saved.filePath,
-    mediaId,
-    categoryId,
+    mediaId: null,
+    categoryId: null,
     saved: true,
   };
 }

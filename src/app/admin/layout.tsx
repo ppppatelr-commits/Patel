@@ -1,6 +1,5 @@
 import { redirect } from 'next/navigation';
-import { getSession } from '@/lib/session';
-import { isCloudAuthEnabled } from '@/lib/user-store';
+import { getSession } from '@/lib/auth';
 import { AdminSignOutButton } from '@/components/admin-sign-out';
 import ClearCacheButton from '@/components/clear-cache-button';
 
@@ -18,7 +17,6 @@ export default async function AdminLayout({
   }
 
   const isAdmin = session.role === 'admin';
-  const cloud = isCloudAuthEnabled();
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white">
@@ -32,9 +30,6 @@ export default async function AdminLayout({
               <p className="text-xs text-secondary">Admin Panel</p>
             </div>
           </div>
-          <p className={`text-xs font-medium ${cloud ? 'text-green-400/90' : 'text-yellow-400/90'}`}>
-            {cloud ? 'Cloud Mode (Supabase)' : 'Local Mode (this server)'}
-          </p>
         </div>
 
         <div className="flex-1 p-4 space-y-1 overflow-y-auto">
@@ -54,7 +49,7 @@ export default async function AdminLayout({
             <ClearCacheButton />
           </div>
           <div className="mb-3">
-            <div className="text-sm font-semibold text-white truncate">{session.name}</div>
+            <div className="text-sm font-semibold text-white truncate">{session.email.split('@')[0]}</div>
             <div className="text-xs text-secondary truncate">{session.email}</div>
             <span
               className={`inline-block mt-1 text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full ${
@@ -81,15 +76,6 @@ export default async function AdminLayout({
           </div>
         </header>
         <div className="p-8">
-          {!cloud && (
-            <div className="bg-[#d4af37]/10 border border-[#d4af37]/30 rounded-xl p-4 mb-6">
-              <h3 className="font-bold text-[#d4af37] text-sm mb-1">Local Mode Active</h3>
-              <p className="text-xs text-secondary">
-                Accounts and menu data are stored on this server. Add Supabase keys in{' '}
-                <code className="text-white">.env.local</code> for cloud sync and multi-device access.
-              </p>
-            </div>
-          )}
           {children}
         </div>
       </div>

@@ -1,6 +1,17 @@
+/**
+ * Admin Login API — Custom authentication (replaces Supabase Auth).
+ * Verifies credentials against environment variables and sets a session cookie.
+ */
+
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyCredentials } from '@/lib/user-store';
-import { SESSION_COOKIE, createSessionToken, sessionCookieOptions } from '@/lib/session';
+import {
+  verifyAdminCredentials,
+  createSessionToken,
+  sessionCookieOptions,
+  checkLoginRateLimit,
+  recordFailedLogin,
+  clearLoginRateLimit,
+} from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,25 +22,54 @@ export async function POST(request: NextRequest) {
     const password = typeof body?.password === 'string' ? body.password : '';
 
     if (!email || !password) {
-      return NextResponse.json({ error: 'Email and password are required' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Email and password are required' },
+        { status: 400 }
+      );
     }
 
-    const user = await verifyCredentials(email, password);
-    if (!user) {
-      return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 });
+    // Get client IP for rate limiting
+    const forwarded = request.headers.get('x-forwarded-for');
+    const ip = forwarded ? forwarded.split(',')[0].trim() : 'unknown';
+
+    // Rate limit check
+    const rateLimit = checkLoginRateLimit(ip);
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: 'Too many login attempts. Please try again later.' },
+        { status: 429 }
+      );
     }
+
+    // Verify credentials
+    const user = await verifyAdminCredentials(email, password);
+
+    if (!user) {
+      recordFailedLogin(ip);
+      return NextResponse.json(
+        { error: 'Invalid email or password' },
+        { status: 401 }
+      );
+    }
+
+    // Successful login — clear rate limit and set session
+    clearLoginRateLimit(ip);
 
     const token = createSessionToken(user);
     const res = NextResponse.json({
       user,
       session: { access_token: token },
     });
-    res.cookies.set(SESSION_COOKIE, token, sessionCookieOptions());
-    // Clear the old dev cookie if it is still around.
+    res.cookies.set('patel_session', token, sessionCookieOptions());
+    // Clear legacy cookie if present
     res.cookies.set('hr_auth', '', { path: '/', maxAge: 0 });
+
     return res;
   } catch (err) {
     console.error('Login error:', err);
-    return NextResponse.json({ error: 'Login failed. Please try again.' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Login failed. Please try again.' },
+      { status: 500 }
+    );
   }
 }

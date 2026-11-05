@@ -1,10 +1,62 @@
+/**
+ * Media Proxy API — Secure image delivery from private GitHub repository.
+ *
+ * Customers request images at /media/dishes/[category]/[dish].webp.
+ * This server-side route:
+ * 1. Validates and sanitizes the requested path (no path traversal).
+ * 2. Downloads the image from the private GitHub content repository
+ *    using the server-side GitHub token (never exposed to client).
+ * 3. Returns image bytes with appropriate cache headers.
+ * 4. Handles missing images safely with 404.
+ *
+ * GitHub token is never sent to the browser.
+ */
+
 import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs/promises';
-import path from 'path';
-import { isSafeDishesPath } from '@/lib/image-storage';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { getDishImageBytes } from '@/lib/image-store';
 
 export const dynamic = 'force-dynamic';
+
+/**
+ * Validates that the requested path is a safe dish image path.
+ * Format: dishes/[category-slug]/[dish-slug].webp
+ * Blocks path traversal and access to non-image files.
+ */
+function isSafeImagePath(rawPath: string): boolean {
+  if (!rawPath || typeof rawPath !== 'string') return false;
+
+  const normalized = rawPath.replace(/\\/g, '/').replace(/^\/+/, '');
+
+  // Block path traversal
+  if (normalized.includes('..') || normalized.includes('~')) return false;
+
+  // Must start with dishes/
+  if (!normalized.startsWith('dishes/')) return false;
+
+  // Must have exactly: dishes/category/file.ext
+  const parts = normalized.split('/');
+  if (parts.length !== 3) return false;
+
+  const [, category, filename] = parts;
+  if (!category || !filename) return false;
+
+  // Only allow image extensions
+  const ext = filename.toLowerCase();
+  if (
+    !ext.endsWith('.webp') &&
+    !ext.endsWith('.png') &&
+    !ext.endsWith('.jpg') &&
+    !ext.endsWith('.jpeg') &&
+    !ext.endsWith('.gif')
+  ) {
+    return false;
+  }
+
+  // No null bytes
+  if (normalized.includes('\0')) return false;
+
+  return true;
+}
 
 export async function GET(
   request: NextRequest,
@@ -12,67 +64,47 @@ export async function GET(
 ) {
   try {
     const { path: segments } = await params;
-    const relSubPath = segments.join('/');
-    const relPath = `media/${relSubPath}`;
+    const relSubPath = segments.join('/'); // e.g. "dishes/chicken-starters/chi-crispy.webp"
 
-    // 1. Safety check
-    if (relPath.includes('..') || relPath.includes('~')) {
-      return new NextResponse('Invalid path', { status: 400 });
+    // Safety validation
+    if (!isSafeImagePath(relSubPath)) {
+      return new NextResponse('Invalid image path', { status: 400 });
     }
 
-    const supabase = createServerSupabaseClient() as any;
+    // Extract category and dish slug from path
+    const parts = relSubPath.split('/');
+    // parts = ['dishes', category, filename]
+    const categorySlug = parts[1];
+    const fileName = parts[2];
+    const dishSlug = fileName.replace(/\.(webp|png|jpe?g|gif)$/i, '');
 
-    // 2. Prefer Supabase Storage when configured — this is where replaced /
-    //    uploaded images live on hosted (Vercel) environments, since the
-    //    baked-in disk files are read-only and cannot be overwritten.
-    if (supabase) {
-      try {
-        const { data, error } = await supabase.storage.from('menu-images').download(relSubPath);
-        if (data && !error) {
-          const arrayBuf = await data.arrayBuffer();
-          const ext = path.extname(relSubPath).toLowerCase();
-          let contentType = 'image/webp';
-          if (ext === '.png') contentType = 'image/png';
-          else if (ext === '.jpg' || ext === '.jpeg') contentType = 'image/jpeg';
-          else if (ext === '.gif') contentType = 'image/gif';
-          else if (ext === '.svg') contentType = 'image/svg+xml';
+    // Download image bytes from private GitHub (server-side token)
+    const result = await getDishImageBytes(categorySlug, dishSlug);
 
-          return new NextResponse(Buffer.from(arrayBuf), {
-            headers: {
-              'Content-Type': contentType,
-              // Never cache: replaced images must reflect immediately.
-              'Cache-Control': 'no-store',
-            },
-          });
-        }
-      } catch {
-        // Fall through to disk
-      }
+    if (!result) {
+      return new NextResponse('Image not found', { status: 404 });
     }
 
-    // 3. Fall back to the baked-in file on disk.
-    const localFullPath = path.join(process.cwd(), 'public', 'media', relSubPath);
-    try {
-      const fileBuffer = await fs.readFile(localFullPath);
-      const ext = path.extname(localFullPath).toLowerCase();
-      let contentType = 'image/webp';
-      if (ext === '.png') contentType = 'image/png';
-      else if (ext === '.jpg' || ext === '.jpeg') contentType = 'image/jpeg';
-      else if (ext === '.gif') contentType = 'image/gif';
-      else if (ext === '.svg') contentType = 'image/svg+xml';
+    // Determine cache headers
+    // Images are versioned by filename; use long cache for immutable images.
+    // For replaceable images, the admin should use a new filename or we rely
+    // on the 15s data cache + short image cache.
+    const isWebp = result.contentType === 'image/webp';
 
-      return new NextResponse(fileBuffer, {
+    return new NextResponse(
+      new Uint8Array(result.buffer),
+      {
         headers: {
-          'Content-Type': contentType,
-          'Cache-Control': 'no-store',
+          'Content-Type': result.contentType,
+          'Content-Length': String(result.size),
+          // Cache images for 1 hour; use cache-busting on admin replace
+          'Cache-Control': 'public, max-age=3600, immutable',
+          'X-Content-Type-Options': 'nosniff',
         },
-      });
-    } catch {
-      // Local file not found on disk
-    }
-
-    return new NextResponse('Media not found', { status: 404 });
+      }
+    );
   } catch (err) {
-    return new NextResponse('Error serving media', { status: 500 });
+    console.error('Media proxy error:', err);
+    return new NextResponse('Error serving image', { status: 500 });
   }
 }

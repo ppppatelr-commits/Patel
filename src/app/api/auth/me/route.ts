@@ -1,6 +1,10 @@
+/**
+ * Admin Session Check API — Custom authentication.
+ * Returns the current authenticated user from the session cookie.
+ */
+
 import { NextResponse } from 'next/server';
-import { getSession } from '@/lib/session';
-import { isCloudAuthEnabled } from '@/lib/user-store';
+import { getSession } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,10 +20,10 @@ export async function GET() {
     user: {
       id: session.sub,
       email: session.email,
-      name: session.name,
+      name: session.email.split('@')[0],
       role: session.role,
     },
     isAdmin: session.role === 'admin',
-    backend: isCloudAuthEnabled() ? 'supabase' : 'local',
+    backend: 'custom',
   });
 }

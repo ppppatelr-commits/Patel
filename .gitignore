@@ -44,3 +44,10 @@ next-env.d.ts
 
 .vercel
 .env*
+!.env.example
+
+# Content repository (separate PR- repo for menu data + images)
+content-repo-template/
+
+# Local logs
+dev.log
