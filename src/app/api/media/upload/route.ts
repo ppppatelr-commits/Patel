@@ -15,6 +15,7 @@ export async function POST(request: NextRequest) {
     const file = formData.get('file') as File | null;
     const dishName = (formData.get('dish') as string) || 'dish';
     const category = (formData.get('category') as string) || 'general';
+    const subfolder = (formData.get('subfolder') as string) || undefined;
 
     if (!file) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
@@ -42,7 +43,8 @@ export async function POST(request: NextRequest) {
       dishName,
       buffer,
       file.type,
-      `Upload image: ${dishName} (${category})`
+      `Upload image: ${dishName} (${category})`,
+      subfolder
     );
 
     return NextResponse.json({

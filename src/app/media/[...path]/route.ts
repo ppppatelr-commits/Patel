@@ -13,7 +13,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getDishImageBytes } from '@/lib/image-store';
+import { downloadGitHubFile } from '@/lib/github';
 
 export const dynamic = 'force-dynamic';
 
@@ -33,12 +33,12 @@ function isSafeImagePath(rawPath: string): boolean {
   // Must start with dishes/
   if (!normalized.startsWith('dishes/')) return false;
 
-  // Must have exactly: dishes/category/file.ext
+  // Must have at least: dishes/.../file.ext (supports nested subfolders)
   const parts = normalized.split('/');
-  if (parts.length !== 3) return false;
+  if (parts.length < 3) return false;
 
-  const [, category, filename] = parts;
-  if (!category || !filename) return false;
+  const filename = parts[parts.length - 1];
+  if (!filename) return false;
 
   // Only allow image extensions
   const ext = filename.toLowerCase();
@@ -71,15 +71,12 @@ export async function GET(
       return new NextResponse('Invalid image path', { status: 400 });
     }
 
-    // Extract category and dish slug from path
-    const parts = relSubPath.split('/');
-    // parts = ['dishes', category, filename]
-    const categorySlug = parts[1];
-    const fileName = parts[2];
-    const dishSlug = fileName.replace(/\.(webp|png|jpe?g|gif)$/i, '');
+    // The full relative path is the file path in GitHub
+    // e.g., "dishes/veg-starter/pan/paneer-tikka.webp" → "media/dishes/veg-starter/pan/paneer-tikka.webp"
+    const filePath = 'media/' + relSubPath;
 
     // Download image bytes from private GitHub (server-side token)
-    const result = await getDishImageBytes(categorySlug, dishSlug);
+    const result = await downloadGitHubFile(filePath);
 
     if (!result) {
       return new NextResponse('Image not found', { status: 404 });

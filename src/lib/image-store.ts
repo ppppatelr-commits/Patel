@@ -74,9 +74,13 @@ export function sanitizeDishFilename(filename: string): string {
 /**
  * Returns the GitHub path for a dish image.
  */
-export function dishImagePath(categorySlug: string, dishSlug: string): string {
+export function dishImagePath(categorySlug: string, dishSlug: string, subfolder?: string): string {
   const cat = sanitizeCategorySlug(categorySlug);
   const file = sanitizeDishFilename(dishSlug);
+  if (subfolder) {
+    const sub = sanitizeCategorySlug(subfolder);
+    return `media/dishes/${cat}/${sub}/${file}`;
+  }
   return `media/dishes/${cat}/${file}`;
 }
 
@@ -111,7 +115,8 @@ export async function uploadDishImage(
   dishSlug: string,
   imageBuffer: Buffer,
   mimeType: string,
-  commitMessage?: string
+  commitMessage?: string,
+  subfolder?: string
 ): Promise<{
   path: string;
   url: string;
@@ -141,7 +146,7 @@ export async function uploadDishImage(
     // Ignore metadata errors
   }
 
-  const filePath = dishImagePath(categorySlug, dishSlug);
+  const filePath = dishImagePath(categorySlug, dishSlug, subfolder);
   const base64Content = optimizedBuffer.toString('base64');
 
   const msg =
@@ -169,7 +174,8 @@ export async function replaceDishImage(
   dishSlug: string,
   imageBuffer: Buffer,
   mimeType: string,
-  commitMessage?: string
+  commitMessage?: string,
+  subfolder?: string
 ): Promise<{
   path: string;
   url: string;
@@ -181,7 +187,8 @@ export async function replaceDishImage(
     dishSlug,
     imageBuffer,
     mimeType,
-    commitMessage || `Replace image: ${dishSlug} (${categorySlug})`
+    commitMessage || `Replace image: ${dishSlug} (${categorySlug})`,
+    subfolder
   );
 }
 
@@ -191,9 +198,10 @@ export async function replaceDishImage(
 export async function deleteDishImage(
   categorySlug: string,
   dishSlug: string,
-  commitMessage?: string
+  commitMessage?: string,
+  subfolder?: string
 ): Promise<boolean> {
-  const filePath = dishImagePath(categorySlug, dishSlug);
+  const filePath = dishImagePath(categorySlug, dishSlug, subfolder);
 
   try {
     await deleteGitHubFile(
