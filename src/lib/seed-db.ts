@@ -47,10 +47,20 @@ export async function ensureSeeded(): Promise<boolean> {
       // Check if existing data has old-format IDs that need migration.
       // Old seeded data used position-based suffixes (--2, --3 based on sort order)
       // instead of occurrence-based suffixes (--2, --3 based on duplicate name count).
+      // Only trigger migration if the majority of items have old-format IDs.
+      // This prevents re-seeding when manually added items (with UUIDs) are present.
+      const seededItems = (menuData?.items || []).filter((i) =>
+        i.id.startsWith('item-')
+      );
+      const hasCorrectFormat = seededItems.some(
+        (i) => i.id === 'item-soups-shorba--tomato-soup'
+      );
       const idsNeedMigration =
         !!menuData &&
         menuData.items.length > 0 &&
-        !menuData.items.some((i) => i.id === 'item-soups-shorba--tomato-soup');
+        seededItems.length > 0 &&
+        !hasCorrectFormat &&
+        seededItems.length > menuData.items.length * 0.5;
 
       const needCats = !categoriesData || categoriesData.categories.length === 0;
       const needItems = !menuData || menuData.items.length === 0 || idsNeedMigration;
