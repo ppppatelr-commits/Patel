@@ -10,11 +10,49 @@ import { slugify } from '@/lib/media-paths';
 export type ImageStatus = 'matched' | 'generated' | 'uploaded' | 'missing' | 'needs_review';
 
 /**
+ * Common abbreviations used in image filenames.
+ */
+const ABBREVIATIONS: Record<string, string> = {
+  chi: 'chicken',
+  mtn: 'mutton',
+  veg: 'vegetable',
+  btr: 'butter',
+  spl: 'special',
+  msl: 'masala',
+  kadai: 'kadhai',
+  pkd: 'pakoda',
+  pcs: 'pieces',
+  kg: 'kilogram',
+  full: 'full',
+  half: 'half',
+};
+
+/**
+ * Expands abbreviations in a slug.
+ * "chi-clear-soup" → "chicken-clear-soup"
+ */
+function expandAbbreviations(slug: string): string {
+  return slug
+    .split('-')
+    .map((word) => ABBREVIATIONS[word] || word)
+    .join('-');
+}
+
+/**
  * Normalizes a dish name into a slug for matching.
  * "Chicken Hot and Sour Soup" → "chicken-hot-and-sour-soup"
  */
 export function dishNameToSlug(dishName: string): string {
   return slugify(dishName);
+}
+
+/**
+ * Normalizes an image filename slug, expanding abbreviations.
+ * "chi-clear-soup" → "chicken-clear-soup"
+ */
+export function imageFilenameToSlug(filename: string): string {
+  const base = slugify(filename.replace(/\.(webp|png|jpe?g|gif)$/i, ''));
+  return expandAbbreviations(base);
 }
 
 /**
@@ -57,13 +95,7 @@ export function detectDuplicateImages(
   return duplicates;
 }
 
-/**
- * Normalizes an image filename into a slug for matching.
- * "chicken-hot-and-sour-soup.webp" → "chicken-hot-and-sour-soup"
- */
-export function imageFilenameToSlug(filename: string): string {
-  return slugify(filename.replace(/\.(webp|png|jpe?g|gif)$/i, ''));
-}
+
 
 /**
  * Checks if an image filename matches a dish name.
