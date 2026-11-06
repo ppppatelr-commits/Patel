@@ -151,12 +151,11 @@ export async function uploadDishImage(
   }
 
   const filePath = dishImagePath(categorySlug, dishSlug, subfolder);
-  const base64Content = optimizedBuffer.toString('base64');
 
   const msg =
     commitMessage || `Upload image: ${dishSlug} (${categorySlug})`;
 
-  await putGitHubFile(filePath, base64Content, msg);
+  await putGitHubFile(filePath, optimizedBuffer, msg);
 
   const rawUrl = `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/${GITHUB_BRANCH}/${filePath}`;
 

@@ -212,16 +212,20 @@ export async function getGitHubFile<T = unknown>(
  */
 export async function putGitHubFile(
   filePath: string,
-  content: string | object,
+  content: Buffer | string | object,
   commitMessage: string
 ): Promise<GitHubFileUpdateResponse> {
   validateGitHubConfig();
 
   return withFileLock(filePath, async () => {
-    const bodyContent =
-      typeof content === 'string' ? content : JSON.stringify(content, null, 2);
-
-    const base64Content = Buffer.from(bodyContent, 'utf-8').toString('base64');
+    let base64Content: string;
+    if (Buffer.isBuffer(content)) {
+      base64Content = content.toString('base64');
+    } else {
+      const bodyContent =
+        typeof content === 'string' ? content : JSON.stringify(content, null, 2);
+      base64Content = Buffer.from(bodyContent, 'utf-8').toString('base64');
+    }
 
     let lastError: Error | null = null;
 
