@@ -44,8 +44,16 @@ export async function ensureSeeded(): Promise<boolean> {
         readRestaurant(),
       ]);
 
+      // Check if existing data has old-format IDs that need migration.
+      // Old seeded data used position-based suffixes (--2, --3 based on sort order)
+      // instead of occurrence-based suffixes (--2, --3 based on duplicate name count).
+      const idsNeedMigration =
+        !!menuData &&
+        menuData.items.length > 0 &&
+        !menuData.items.some((i) => i.id === 'item-soups-shorba--tomato-soup');
+
       const needCats = !categoriesData || categoriesData.categories.length === 0;
-      const needItems = !menuData || menuData.items.length === 0;
+      const needItems = !menuData || menuData.items.length === 0 || idsNeedMigration;
       const needRestaurant = !restaurantData;
 
       // Nothing to seed — return early without any GitHub writes.
