@@ -33,6 +33,7 @@ export interface MenuItem {
   price: number;
   image_url?: string | null;
   image_filename?: string | null;
+  image_status?: string | null;
   sort_order: number;
   is_available: boolean;
   created_at: string;

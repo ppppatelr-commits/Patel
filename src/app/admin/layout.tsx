@@ -37,6 +37,7 @@ export default async function AdminLayout({
           <NavItem href="/admin/categories" label="Menu Categories" icon="C" />
           <NavItem href="/admin/items" label="Menu Items" icon="M" />
           <NavItem href="/admin/media" label="Media Library" icon="I" />
+          <NavItem href="/admin/image-manager" label="Smart Image Manager" icon="G" />
           <NavItem href="/admin/qrcode" label="QR Code & Stands" icon="Q" />
           {isAdmin && <NavItem href="/admin/settings" label="Restaurant Settings" icon="S" />}
           {isAdmin && <NavItem href="/admin/users" label="User Management" icon="U" />}

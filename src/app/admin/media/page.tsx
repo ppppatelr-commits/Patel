@@ -480,7 +480,7 @@ export default function MediaLibraryPage() {
                       src={item.file_url + (cacheBust ? `?cb=${cacheBust}` : '')}
                       alt={item.dish_name}
                       className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
-                      onError={(e) => { (e.target as HTMLImageElement).src = '/logo.png'; }}
+                      onError={(e) => { (e.target as HTMLImageElement).src = '/api/placeholder/' + encodeURIComponent(item.dish_name || 'dish'); }}
                     />
                     <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors flex items-center justify-center">
                       <button

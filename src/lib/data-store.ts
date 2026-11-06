@@ -107,6 +107,7 @@ export interface MenuItem {
   price: number;
   categoryId: string;
   image?: string | null;
+  imageStatus?: string | null;
   isAvailable: boolean;
   isFeatured?: boolean;
   sortOrder: number;

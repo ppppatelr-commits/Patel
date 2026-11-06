@@ -652,7 +652,7 @@ export default function ItemsPage() {
                     alt="Current"
                     className="h-16 w-16 object-cover rounded border border-white/10"
                     onError={(e) => {
-                      (e.target as HTMLImageElement).src = '/logo.png';
+                      (e.target as HTMLImageElement).src = '/api/placeholder/' + encodeURIComponent(editData.name || editingItem?.name || 'dish');
                     }}
                   />
                   <div className="min-w-0 flex-1">
@@ -774,7 +774,7 @@ export default function ItemsPage() {
                             src={h.previous_url}
                             alt="Previous"
                             className="h-12 w-12 object-cover rounded border border-white/10 flex-shrink-0"
-                            onError={(e) => { (e.target as HTMLImageElement).src = '/logo.png'; }}
+                            onError={(e) => { (e.target as HTMLImageElement).src = '/api/placeholder/' + encodeURIComponent(editData.name || editingItem?.name || 'dish'); }}
                           />
                           <div className="flex-1 min-w-0">
                             <p className="text-xs text-white/50">
@@ -942,7 +942,7 @@ export default function ItemsPage() {
                       alt="Preview"
                       className="h-16 w-16 object-cover rounded border border-white/10"
                       onError={(e) => {
-                        (e.target as HTMLImageElement).src = '/logo.png';
+                        (e.target as HTMLImageElement).src = '/api/placeholder/' + encodeURIComponent(editData.name || editingItem?.name || 'dish');
                       }}
                     />
                     <div className="min-w-0 flex-1">
