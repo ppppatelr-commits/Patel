@@ -100,11 +100,14 @@ export async function ensureSeeded(): Promise<boolean> {
           const categoryId = categoryMap.get(catName);
           if (!categoryId) continue;
 
+          const seen = new Map<string, number>();
           let sortIndex = 0;
           for (const item of catItems) {
             const itemSlug = slugify(item.name);
+            const occurrence = (seen.get(itemSlug) || 0) + 1;
+            seen.set(itemSlug, occurrence);
             items.push({
-              id: `item-${slugify(catName)}--${itemSlug}${sortIndex > 0 ? `--${sortIndex + 1}` : ''}`,
+              id: `item-${slugify(catName)}--${itemSlug}${occurrence > 1 ? `--${occurrence}` : ''}`,
               categoryId,
               name: item.name,
               description: item.description || null,
