@@ -78,7 +78,7 @@ export default function ItemsPage() {
           name: i.name,
           description: i.description || null,
           price: i.price,
-          image_url: i.image ? `/${i.image}` : null,
+          image_url: i.image ? `/${i.image}?v=${i.updatedAt || Date.now()}` : null,
           image_filename: i.image ? i.image.split('/').pop() || null : null,
           sort_order: i.sortOrder || 0,
           is_available: i.isAvailable !== false,
@@ -181,7 +181,7 @@ export default function ItemsPage() {
           description: editData.description.trim() || null,
           price,
           image_filename: editData.image_filename || null,
-          image_url: editData.image_url || null,
+          image_url: editData.image_url ? editData.image_url.split('?')[0] : null,
           category_id: editData.category_id,
           sort_order: Number(editData.sort_order) || 1,
           is_available: editData.is_available,
@@ -712,7 +712,7 @@ export default function ItemsPage() {
                                 .catch(() => {});
                             }).catch(console.error);
                           }
-                          setEditData({ ...editData, image_filename: data.filename, image_url: `/${data.filePath}` });
+                          setEditData({ ...editData, image_filename: data.filename, image_url: `/${data.filePath}?v=${Date.now()}` });
                           setUploadingFile(null);
                           alert('Image uploaded: ' + data.filename);
                         } else {
@@ -993,7 +993,7 @@ export default function ItemsPage() {
                           const res = await fetch('/api/media/upload', { method: 'POST', body: formData });
                           const data = await res.json();
                           if (res.ok && data.success) {
-                            setAddData({ ...addData, image_filename: data.filename, image_url: `/${data.filePath}` });
+                            setAddData({ ...addData, image_filename: data.filename, image_url: `/${data.filePath}?v=${Date.now()}` });
                             setAddUploadFile(null);
                           } else {
                             alert('Upload failed: ' + (data.error || 'Unknown error'));

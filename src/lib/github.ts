@@ -402,18 +402,12 @@ export async function downloadGitHubFile(
 ): Promise<{ buffer: Buffer; contentType: string; size: number } | null> {
   validateGitHubConfig();
 
-  const file = await getGitHubFile<{
-    content: string;
-    encoding: string;
-    size: number;
-    name: string;
-  }>(filePath);
+  const meta = await getGitHubFileMeta(filePath);
+  if (!meta) return null;
 
-  if (!file) return null;
+  const buffer = Buffer.from(meta.content, 'base64');
 
-  const buffer = Buffer.from(file.content, 'base64');
-
-  const ext = path.extname(file.name).toLowerCase();
+  const ext = path.extname(meta.name).toLowerCase();
   let contentType = 'application/octet-stream';
   if (ext === '.webp') contentType = 'image/webp';
   else if (ext === '.png') contentType = 'image/png';
@@ -421,7 +415,7 @@ export async function downloadGitHubFile(
   else if (ext === '.gif') contentType = 'image/gif';
   else if (ext === '.svg') contentType = 'image/svg+xml';
 
-  return { buffer, contentType, size: file.size };
+  return { buffer, contentType, size: meta.size };
 }
 
 export { GITHUB_OWNER, GITHUB_REPO, GITHUB_BRANCH };
