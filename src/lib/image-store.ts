@@ -76,7 +76,11 @@ export function sanitizeDishFilename(filename: string): string {
  */
 export function dishImagePath(categorySlug: string, dishSlug: string, subfolder?: string): string {
   const cat = sanitizeCategorySlug(categorySlug);
-  const file = sanitizeDishFilename(dishSlug);
+  let file = sanitizeDishFilename(dishSlug);
+  // Ensure .webp extension
+  if (!file.match(/\.(webp|png|jpe?g|gif)$/i)) {
+    file = file + '.webp';
+  }
   if (subfolder) {
     const sub = sanitizeCategorySlug(subfolder);
     return `media/dishes/${cat}/${sub}/${file}`;
@@ -158,7 +162,7 @@ export async function uploadDishImage(
 
   return {
     path: filePath,
-    url: rawUrl,
+    url: '/' + filePath,
     sizeBytes,
     width,
     height,

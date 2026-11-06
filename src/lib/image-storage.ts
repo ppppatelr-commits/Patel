@@ -81,7 +81,7 @@ export async function saveDishImage(opts: {
   return {
     filename: result.path.split('/').pop() || dish,
     filePath: result.path,
-    fileUrl: result.url,
+    fileUrl: '/' + result.path,
     provider: 'github',
     saved: true,
   };

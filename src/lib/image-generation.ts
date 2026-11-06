@@ -119,7 +119,7 @@ export async function generateDishImage(dish: string, category?: string | null):
   const catName = category || findCategoryForDish(finalDish) || 'PATEL SPECIAL';
   const saved = await saveDishImage({ dish: finalDish, category: catName, buffer: imageBuffer, mimeType });
   const filename = saved.filename;
-  const fileUrl = saved.fileUrl;
+  const fileUrl = saved.fileUrl ? (saved.fileUrl.startsWith('/') ? saved.fileUrl : '/' + saved.filePath) : null;
 
   // Image is stored in GitHub; no Supabase media record needed.
   // GitHub commit history serves as the record of image changes.

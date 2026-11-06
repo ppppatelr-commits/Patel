@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
       success: true,
       filename: result.path.split('/').pop(),
       filePath: result.path,
-      fileUrl: result.url,
+      fileUrl: '/' + result.path,
       size: result.sizeBytes,
       mimeType: file.type,
       width: result.width,
