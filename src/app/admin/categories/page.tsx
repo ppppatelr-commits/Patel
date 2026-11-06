@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { MenuCategory } from '@/types';
+import Toast from '@/components/toast';
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<MenuCategory[]>([]);
@@ -18,6 +19,10 @@ export default function CategoriesPage() {
   const [draggedIdx, setDraggedIdx] = useState<number | null>(null);
   const [savingOrder, setSavingOrder] = useState(false);
   const [message, setMessage] = useState('');
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  function showToast(message: string, type: 'success' | 'error' = 'success') {
+    setToast({ message, type });
+  }
 
   useEffect(() => {
     loadCategories();
@@ -27,7 +32,17 @@ export default function CategoriesPage() {
     try {
       const res = await fetch('/api/categories', { cache: 'no-store' });
       const data = await res.json();
-      const list: MenuCategory[] = Array.isArray(data) ? data : [];
+      const raw: any[] = Array.isArray(data) ? data : [];
+      const list: MenuCategory[] = raw.map((c: any) => ({
+        id: c.id,
+        name: c.name,
+        slug: c.slug,
+        sort_order: c.sortOrder ?? c.sort_order ?? 0,
+        image_url: c.image ? `/${c.image}` : (c.image_url || null),
+        is_active: c.isActive !== false && c.is_active !== false,
+        created_at: c.createdAt || c.created_at || new Date().toISOString(),
+        updated_at: c.updatedAt || c.updated_at || new Date().toISOString(),
+      }));
       list.sort((a, b) => a.sort_order - b.sort_order);
       setCategories(list);
     } catch {
@@ -63,6 +78,7 @@ export default function CategoriesPage() {
       setNewImageUrl('');
       setShowAddModal(false);
       setMessage('Category added successfully!');
+      showToast('Category added successfully!');
       await loadCategories();
     } catch (err) {
       alert('Error: ' + (err as Error).message);
@@ -72,8 +88,8 @@ export default function CategoriesPage() {
   function openEdit(cat: MenuCategory) {
     setEditingCat(cat);
     setEditName(cat.name);
-    setEditSlug(cat.slug);
-    setEditSort(cat.sort_order);
+    setEditSlug(cat.slug || '');
+    setEditSort(cat.sort_order ?? 0);
     setEditImageUrl(cat.image_url || '');
   }
 
@@ -99,6 +115,7 @@ export default function CategoriesPage() {
       }
       setEditingCat(null);
       setMessage('Category updated successfully!');
+      showToast('Category updated successfully!');
       await loadCategories();
     } catch (err) {
       alert('Error: ' + (err as Error).message);
@@ -117,6 +134,7 @@ export default function CategoriesPage() {
         return;
       }
       setMessage('Category deleted and remaining categories renumbered sequentially.');
+      showToast('Category deleted and remaining categories renumbered sequentially.');
       await loadCategories();
     } catch (err) {
       alert('Error: ' + (err as Error).message);
@@ -159,9 +177,11 @@ export default function CategoriesPage() {
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || 'Failed to save order');
       setMessage('Category order saved successfully!');
+      showToast('Category order saved successfully!');
       await loadCategories();
     } catch (err) {
       setMessage('Error saving order: ' + (err as Error).message);
+      showToast('Error saving order: ' + (err as Error).message, 'error');
     } finally {
       setSavingOrder(false);
     }
@@ -251,7 +271,7 @@ export default function CategoriesPage() {
                 <td className="px-6 py-4">
                   <input
                     type="number"
-                    value={cat.sort_order}
+                    value={cat.sort_order ?? 0}
                     onChange={(e) => {
                       const newOrder = Number(e.target.value) || 0;
                       setCategories((prev) => prev.map((c) => (c.id === cat.id ? { ...c, sort_order: newOrder } : c)));
@@ -400,6 +420,13 @@ export default function CategoriesPage() {
           </div>
         </div>
       )}
+    {toast && (
+      <Toast
+        message={toast.message}
+        type={toast.type}
+        onDismiss={() => setToast(null)}
+      />
+    )}
     </div>
   );
 }

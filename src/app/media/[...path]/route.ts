@@ -97,8 +97,10 @@ export async function GET(
         headers: {
           'Content-Type': result.contentType,
           'Content-Length': String(result.size),
-          // Cache images for 1 hour; use cache-busting on admin replace
-          'Cache-Control': 'public, max-age=3600, immutable',
+          // No caching - always fetch fresh image (prevents stale images after upload/replace)
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
           'X-Content-Type-Options': 'nosniff',
         },
       }

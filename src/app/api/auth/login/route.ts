@@ -41,8 +41,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verify credentials
-    const user = await verifyAdminCredentials(email, password);
+    // Verify credentials — check env-based admin first, then GitHub-stored users
+    let user = await verifyAdminCredentials(email, password);
+    if (!user) {
+      const { verifyCredentials } = await import('@/lib/user-store');
+      const ghUser = await verifyCredentials(email, password);
+      if (ghUser) {
+        user = { id: ghUser.id, email: ghUser.email, role: ghUser.role };
+      }
+    }
 
     if (!user) {
       recordFailedLogin(ip);

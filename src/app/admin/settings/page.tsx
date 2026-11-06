@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { MENU_DATA } from '@/lib/menu-data';
+import Toast from '@/components/toast';
 
 export default function SettingsPage() {
   const [name, setName] = useState<string>(MENU_DATA.restaurant.name);
@@ -11,6 +12,10 @@ export default function SettingsPage() {
   const [logoUrl, setLogoUrl] = useState('/logo.png');
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  function showToast(message: string, type: 'success' | 'error' = 'success') {
+    setToast({ message, type });
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -45,8 +50,10 @@ export default function SettingsPage() {
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || 'Failed to save settings');
       setMessage('Settings saved successfully! They are now live on the public site.');
+      showToast('Settings saved successfully! They are now live on the public site.');
     } catch (err) {
       setMessage('Error saving settings: ' + (err as Error).message);
+      showToast('Error saving settings: ' + (err as Error).message, 'error');
     } finally {
       setSaving(false);
     }
@@ -126,6 +133,7 @@ export default function SettingsPage() {
                   if (!file) return;
                   if (file.size > 5 * 1024 * 1024) {
                     setMessage('Error: logo must be under 5 MB.');
+                    showToast('Error: logo must be under 5 MB.', 'error');
                     return;
                   }
                   try {
@@ -137,12 +145,15 @@ export default function SettingsPage() {
                     const data = await res.json().catch(() => ({}));
                     if (!res.ok || !data.success) {
                       setMessage('Error uploading logo: ' + (data.error || 'Unknown error'));
+                      showToast('Error uploading logo: ' + (data.error || 'Unknown error'), 'error');
                       return;
                     }
                     setLogoUrl(data.fileUrl);
                     setMessage('Logo uploaded. Click Save Settings to publish it.');
+                    showToast('Logo uploaded. Click Save Settings to publish it.');
                   } catch (err) {
                     setMessage('Error uploading logo: ' + (err as Error).message);
+                    showToast('Error uploading logo: ' + (err as Error).message, 'error');
                   }
                 }}
                 className="w-full px-4 py-2.5 rounded-lg bg-[#0a0a0a] border border-white/10 text-white text-sm file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:bg-[#d4af37] file:text-[#0a0a0a] file:font-bold file:cursor-pointer"
@@ -187,6 +198,13 @@ export default function SettingsPage() {
           </div>
         </div>
       </div>
+    {toast && (
+      <Toast
+        message={toast.message}
+        type={toast.type}
+        onDismiss={() => setToast(null)}
+      />
+    )}
     </div>
   );
 }

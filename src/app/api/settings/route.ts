@@ -12,11 +12,13 @@ import {
   RestaurantData,
   SettingsData,
 } from '@/lib/data-store';
+import { ensureSeeded } from '@/lib/seed-db';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
+    await ensureSeeded();
     const [restaurant, settings] = await Promise.all([
       readRestaurant(),
       readSettings(),

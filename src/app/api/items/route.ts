@@ -10,6 +10,7 @@ import {
   MenuItem,
   readCategories,
 } from '@/lib/data-store';
+import { ensureSeeded } from '@/lib/seed-db';
 import { v4 as uuidv4 } from 'uuid';
 
 export const dynamic = 'force-dynamic';
@@ -26,6 +27,7 @@ function slugify(text: string): string {
 
 export async function GET(request: NextRequest) {
   try {
+    await ensureSeeded();
     const { searchParams } = new URL(request.url);
     const categoryId = searchParams.get('category_id');
 
@@ -63,7 +65,8 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const {
-      categoryId,
+      categoryId: rawCategoryId,
+      category_id,
       name,
       price,
       image_url,
@@ -72,6 +75,7 @@ export async function POST(request: NextRequest) {
       is_available,
       description,
     } = body;
+    const categoryId = rawCategoryId || category_id;
 
     if (!categoryId || !name || !String(name).trim()) {
       return NextResponse.json(
@@ -180,7 +184,11 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ success: true });
     }
 
-    const { id, ...updates } = body;
+    const { id, ...rawUpdates } = body;
+    const updates = { ...rawUpdates };
+    if (updates.category_id !== undefined && updates.categoryId === undefined) {
+      updates.categoryId = updates.category_id;
+    }
     if (!id) {
       return NextResponse.json(
         { error: 'Item ID is required' },
@@ -219,6 +227,17 @@ export async function PUT(request: NextRequest) {
       current.categoryId = updates.categoryId;
     }
     if (updates.image !== undefined) current.image = updates.image || null;
+    if (updates.image_url !== undefined && updates.image === undefined) {
+      // Strip leading slash to store as GitHub path (media/dishes/...)
+      const url = updates.image_url || '';
+      current.image = url.startsWith('/') ? url.slice(1) : url || null;
+    }
+    if (updates.image_filename !== undefined && updates.image === undefined && updates.image_url === undefined) {
+      const catSlug = (await readCategories())?.categories.find(c => c.id === current.categoryId)?.slug || 'general';
+      current.image = updates.image_filename
+        ? (updates.image_filename.includes('/') ? updates.image_filename : `media/dishes/${catSlug}/${updates.image_filename}`)
+        : null;
+    }
     if (updates.is_available !== undefined)
       current.isAvailable = updates.is_available !== false;
     current.updatedAt = new Date().toISOString();

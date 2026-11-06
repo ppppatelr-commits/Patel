@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { MenuItem, MenuCategory } from '@/types';
 import type { ImageHistoryEntry } from '@/types';
 import { buildSeedStore } from '@/lib/menu-seed';
+import Toast from '@/components/toast';
 
 // UNIQUE_MARKER_20261102_1430
 export default function ItemsPage() {
@@ -45,6 +46,11 @@ export default function ItemsPage() {
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const [savingOrder, setSavingOrder] = useState(false);
   const [message, setMessage] = useState('');
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  function showToast(message: string, type: 'success' | 'error' = 'success') {
+    setToast({ message, type });
+  }
 
   // ── Image History ─────────────────────────────────────────────────────────
   const [imageHistory, setImageHistory] = useState<ImageHistoryEntry[]>([]);
@@ -57,11 +63,40 @@ export default function ItemsPage() {
 
   async function loadData() {
     try {
-      const res = await fetch('/api/menu', { cache: 'no-store' });
-      const data = await res.json();
-      if (res.ok && Array.isArray(data.items) && Array.isArray(data.categories)) {
-        setItems(data.items);
-        setCategories(data.categories);
+      const [itemsRes, catsRes] = await Promise.all([
+        fetch('/api/items', { cache: 'no-store' }),
+        fetch('/api/categories', { cache: 'no-store' }),
+      ]);
+      const rawItems = await itemsRes.json();
+      const rawCats = await catsRes.json();
+
+      if (itemsRes.ok && Array.isArray(rawItems) && catsRes.ok && Array.isArray(rawCats)) {
+        // Convert GitHub format (camelCase) to admin format (snake_case)
+        const mappedItems: MenuItem[] = rawItems.map((i: any) => ({
+          id: i.id,
+          category_id: i.categoryId,
+          name: i.name,
+          description: i.description || null,
+          price: i.price,
+          image_url: i.image ? `/${i.image}` : null,
+          image_filename: i.image ? i.image.split('/').pop() || null : null,
+          sort_order: i.sortOrder || 0,
+          is_available: i.isAvailable !== false,
+          created_at: i.createdAt || new Date().toISOString(),
+          updated_at: i.updatedAt || new Date().toISOString(),
+        }));
+        const mappedCats: MenuCategory[] = rawCats.map((c: any) => ({
+          id: c.id,
+          name: c.name,
+          slug: c.slug,
+          sort_order: c.sortOrder || 0,
+          image_url: c.image || null,
+          is_active: c.isActive !== false,
+          created_at: c.createdAt || new Date().toISOString(),
+          updated_at: c.updatedAt || new Date().toISOString(),
+        }));
+        setItems(mappedItems);
+        setCategories(mappedCats);
       } else {
         const seed = buildSeedStore();
         setItems(seed.items);
@@ -155,10 +190,12 @@ export default function ItemsPage() {
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         alert('Error: ' + (data.error || 'Failed to save changes'));
+        showToast('Error: ' + (data.error || 'Failed to save changes'), 'error');
         return;
       }
       setEditingItem(null);
       setMessage(`Saved changes for ${editData.name.trim()}`);
+      showToast(`Saved changes for ${editData.name.trim()}`);
       await loadData();
     } catch (err) {
       alert('Save error: ' + (err as Error).message);
@@ -194,12 +231,14 @@ export default function ItemsPage() {
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         alert('Error: ' + (data.error || 'Failed to add item'));
+        showToast('Error: ' + (data.error || 'Failed to add item'), 'error');
         return;
       }
       setShowAddForm(false);
       setAddData({ name: '', description: '', price: '', image_filename: '', image_url: '', category_id: categories[0]?.id || '', sort_order: '', is_available: true });
       setAddUploadFile(null);
       setMessage(`Added new dish: ${addData.name.trim()}`);
+      showToast(`Added new dish: ${addData.name.trim()}`);
       await loadData();
     } catch (err) {
       alert('Error: ' + (err as Error).message);
@@ -217,9 +256,11 @@ export default function ItemsPage() {
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         alert('Error: ' + (data.error || 'Failed to delete'));
+        showToast('Error: ' + (data.error || 'Failed to delete'), 'error');
         return;
       }
       setMessage('Item deleted and category items renumbered sequentially.');
+      showToast('Item deleted and category items renumbered sequentially.');
       await loadData();
     } catch (err) {
       alert('Delete error: ' + (err as Error).message);
@@ -302,6 +343,7 @@ export default function ItemsPage() {
       if (!res.ok) throw new Error(data.error || 'Failed to save menu items order');
 
       setMessage('Menu item order saved successfully!');
+      showToast('Menu item order saved successfully!');
       await loadData();
     } catch (err) {
       setMessage('Error saving order: ' + (err as Error).message);
@@ -670,7 +712,7 @@ export default function ItemsPage() {
                                 .catch(() => {});
                             }).catch(console.error);
                           }
-                          setEditData({ ...editData, image_filename: data.filename, image_url: data.fileUrl });
+                          setEditData({ ...editData, image_filename: data.filename, image_url: `/${data.filePath}` });
                           setUploadingFile(null);
                           alert('Image uploaded: ' + data.filename);
                         } else {
@@ -951,7 +993,7 @@ export default function ItemsPage() {
                           const res = await fetch('/api/media/upload', { method: 'POST', body: formData });
                           const data = await res.json();
                           if (res.ok && data.success) {
-                            setAddData({ ...addData, image_filename: data.filename, image_url: data.fileUrl });
+                            setAddData({ ...addData, image_filename: data.filename, image_url: `/${data.filePath}` });
                             setAddUploadFile(null);
                           } else {
                             alert('Upload failed: ' + (data.error || 'Unknown error'));
@@ -1017,6 +1059,13 @@ export default function ItemsPage() {
           </div>
         </div>
       )}
+    {toast && (
+      <Toast
+        message={toast.message}
+        type={toast.type}
+        onDismiss={() => setToast(null)}
+      />
+    )}
     </div>
   );
 }

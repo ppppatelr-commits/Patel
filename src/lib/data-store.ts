@@ -19,6 +19,7 @@ const DATA_FILES = {
   categories: 'data/categories.json',
   restaurant: 'data/restaurant.json',
   settings: 'data/settings.json',
+  users: 'data/users.json',
 } as const;
 
 /**
@@ -80,13 +81,18 @@ async function readJsonFile<T>(filePath: string): Promise<T | null> {
 
 /**
  * Generic write: writes JSON to GitHub and invalidates cache.
+ * Cache is invalidated BEFORE and AFTER the write to prevent stale reads
+ * during concurrent write windows.
  */
 async function writeJsonFile<T>(
   filePath: string,
   data: T,
   commitMessage: string
 ): Promise<void> {
+  // Invalidate cache before write so concurrent reads don't serve stale data
+  invalidateCached(filePath);
   await putGitHubFile(filePath, data as unknown as string | object, commitMessage);
+  // Invalidate again after write to ensure next read fetches fresh from GitHub
   invalidateCached(filePath);
 }
 
@@ -252,6 +258,34 @@ export async function readSettings(): Promise<SettingsData | null> {
  */
 export async function writeSettings(data: SettingsData): Promise<void> {
   await writeJsonFile(SETTINGS_CACHE_KEY, data, 'Update app settings');
+}
+
+// ============================================================================
+// USERS (users.json)
+// ============================================================================
+
+export interface StoredUser {
+  id: string;
+  email: string;
+  name: string;
+  role: 'admin' | 'user';
+  passwordHash: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface UsersData {
+  users: StoredUser[];
+}
+
+const USERS_CACHE_KEY = DATA_FILES.users;
+
+export async function readUsers(): Promise<UsersData | null> {
+  return readJsonFile<UsersData>(USERS_CACHE_KEY);
+}
+
+export async function writeUsers(data: UsersData): Promise<void> {
+  await writeJsonFile(USERS_CACHE_KEY, data, 'Update users');
 }
 
 // ============================================================================

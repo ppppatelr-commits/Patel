@@ -58,9 +58,29 @@ export default function MediaLibraryPage() {
         fetch('/api/media', { cache: 'no-store' }),
         fetch('/api/categories', { cache: 'no-store' }),
       ]);
-      const items: MediaItem[] = mediaRes.ok ? await mediaRes.json() : [];
+      const rawImages = mediaRes.ok ? await mediaRes.json() : [];
       const cats = catsRes.ok ? await catsRes.json() : [];
-      setMedia(Array.isArray(items) ? items : []);
+      const items: MediaItem[] = Array.isArray(rawImages)
+        ? rawImages.map((img: any) => ({
+            id: img.path || img.name,
+            dish_name: img.name ? img.name.replace(/\.(webp|png|jpe?g|gif)$/i, '').replace(/-/g, ' ') : 'Unknown',
+            filename: img.name || '',
+            original_name: img.name || '',
+            file_path: img.path || '',
+            file_url: img.path ? `/${img.path}` : '',
+            mime_type: 'image/webp',
+            width: null,
+            height: null,
+            size_bytes: img.size || 0,
+            category_id: null,
+            category_name: img.category || null,
+            menu_item_id: null,
+            status: 'active',
+            uploaded_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          }))
+        : [];
+      setMedia(items);
       setCategories(Array.isArray(cats) ? cats.map((c: any) => ({ id: c.id, name: c.name })) : []);
       loadStats(Array.isArray(items) ? items : []);
     } catch (err) {
@@ -74,8 +94,8 @@ export default function MediaLibraryPage() {
     const term = search.trim().toLowerCase();
     const normalized = term.replace(/[-_]+/g, ' ');
     let result = media.filter((item) => {
-      const dish = item.dish_name.toLowerCase();
-      const file = item.filename.toLowerCase();
+      const dish = (item.dish_name || '').toLowerCase();
+      const file = (item.filename || '').toLowerCase();
       const matchSearch = !term
         ? true
         : dish.includes(term) ||

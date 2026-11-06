@@ -9,6 +9,7 @@ import {
   writeCategories,
   MenuCategory,
 } from '@/lib/data-store';
+import { ensureSeeded } from '@/lib/seed-db';
 import { v4 as uuidv4 } from 'uuid';
 
 export const dynamic = 'force-dynamic';
@@ -25,6 +26,7 @@ function slugify(text: string): string {
 
 export async function GET() {
   try {
+    await ensureSeeded();
     const data = await readCategories();
     const categories = data?.categories || [];
     return NextResponse.json(categories);
