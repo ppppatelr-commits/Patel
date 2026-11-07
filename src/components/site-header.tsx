@@ -20,9 +20,6 @@ export function SiteHeader({ name, phones }: SiteHeaderProps) {
             alt="Patel Restaurant Logo"
             className="h-10 sm:h-12 w-auto object-contain flex-shrink-0 transition-transform duration-300 group-hover:scale-105"
           />
-          <span className="block text-sm sm:text-xl font-bold tracking-tight uppercase text-[#d4af37] truncate">
-              {name}
-            </span>
           </Link>
 
         <div className="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm text-white flex-shrink-0">

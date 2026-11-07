@@ -18,9 +18,6 @@ export function SiteFooter({ name, phones, address, developerName, developerPhon
             alt="Patel Restaurant Logo"
             className="h-14 sm:h-16 w-auto object-contain"
           />
-          <span className="font-bold text-lg sm:text-xl uppercase tracking-[0.2em] text-[#d4af37]">
-            {name}
-          </span>
         </div>
         <div className="mt-6 pt-4 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-[#a1a1aa]">
           <span>© 2026 {name}. All Rights Reserved.</span>
