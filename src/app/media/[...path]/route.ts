@@ -94,10 +94,9 @@ export async function GET(
         headers: {
           'Content-Type': result.contentType,
           'Content-Length': String(result.size),
-          // No caching - always fetch fresh image (prevents stale images after upload/replace)
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0',
+          // Cache images to reduce GitHub API calls and avoid rate limits.
+          // Images are versioned by filename; admin replacements use new filenames.
+          'Cache-Control': 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400',
           'X-Content-Type-Options': 'nosniff',
         },
       }
