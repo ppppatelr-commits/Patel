@@ -10,24 +10,24 @@ interface SiteFooterProps {
 
 export function SiteFooter({ name, phones, address, developerName, developerPhone }: SiteFooterProps) {
   return (
-    <footer className="bg-[#0a0a0a] border-t border-[#d4af37]/30 pt-10 pb-6">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="flex flex-col items-center gap-3 text-center">
+    <footer className="bg-[#0a0a0a] border-t border-[#d4af37]/30 py-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-3 flex-wrap">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
           <img
             src="/patel-logo-gold.png"
             alt="Patel Restaurant Logo"
-            className="h-14 sm:h-16 w-auto object-contain"
+            className="h-10 sm:h-12 w-auto object-contain flex-shrink-0"
           />
+          <span className="font-bold text-sm sm:text-lg uppercase tracking-tight truncate text-[#d4af37]">
+            {name}
+          </span>
         </div>
-        <div className="mt-6 pt-4 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-[#a1a1aa]">
-          <span>© 2026 {name}. All Rights Reserved.</span>
-          <a
-            href={`tel:${developerPhone.replace(/\s/g, '')}`}
-            className="hover:text-[#d4af37] transition-colors"
-          >
-            Developed by {developerName}
-          </a>
-        </div>
+        <a
+          href={`tel:${developerPhone.replace(/\s/g, '')}`}
+          className="text-[#d4af37] hover:text-[#e6c850] transition-colors font-semibold text-xs sm:text-sm flex-shrink-0"
+        >
+          Developed by {developerName}
+        </a>
       </div>
     </footer>
   );

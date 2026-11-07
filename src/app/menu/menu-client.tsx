@@ -238,15 +238,13 @@ export default function MenuClient({
         </div>
       )}
 
-      <footer className="mt-16 bg-[#0a0a0a] border-t border-[#d4af37]/30 pt-10 pb-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex flex-col items-center gap-3 text-center">
-            <img src="/patel-logo-gold.png" alt="Patel Restaurant Logo" className="h-14 sm:h-16 w-auto object-contain" />
+      <footer className="mt-16 bg-[#0a0a0a] border-t border-[#d4af37]/30 py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <img src="/patel-logo-gold.png" alt="Patel Restaurant Logo" className="h-10 sm:h-12 w-auto object-contain flex-shrink-0" />
+            <span className="font-bold text-sm sm:text-lg uppercase tracking-tight truncate text-[#d4af37]">{settings?.name || 'Patel Restaurant'}</span>
           </div>
-          <div className="mt-6 pt-4 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-[#a1a1aa]">
-            <span>© 2026 {settings?.name || 'Patel Restaurant'}. All Rights Reserved.</span>
-            <DeveloperCredit phone="+917303321019" name="Salman Furniturewala" />
-          </div>
+          <DeveloperCredit phone="+917303321019" name="Salman Furniturewala" />
         </div>
       </footer>
     </div>

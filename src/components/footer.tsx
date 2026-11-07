@@ -30,7 +30,7 @@ export function DeveloperCredit({ phone, name }: { phone: string; name: string }
   return (
     <a
       href={`tel:${phone.replace(/\s/g, '')}`}
-      className="text-xs text-[#a1a1aa] hover:text-[#d4af37] transition-colors"
+      className="text-[#d4af37] hover:text-[#e6c850] transition-colors font-semibold text-xs sm:text-sm"
     >
       Developed by {name}
     </a>
