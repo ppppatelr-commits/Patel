@@ -525,7 +525,7 @@ export default function MediaLibraryPage() {
                     src={item.file_url + (cacheBust ? `?cb=${cacheBust}` : '')}
                     alt={item.dish_name}
                     className="w-14 h-14 rounded-xl object-cover border border-white/10 flex-shrink-0"
-                    onError={(e) => { (e.target as HTMLImageElement).src = '/logo.png'; }}
+                    onError={(e) => { (e.target as HTMLImageElement).src = '/patel-logo-gold.png'; }}
                   />
                   <div className="min-w-0 flex-1">
                     <h4 className="font-bold text-white text-sm truncate">{item.dish_name}</h4>

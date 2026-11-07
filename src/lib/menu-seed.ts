@@ -45,7 +45,7 @@ export function buildSeedSettings(): RestaurantSettings {
     phone_2: MENU_DATA.restaurant.phone2,
     tagline: MENU_DATA.restaurant.tagline,
     address: MENU_DATA.restaurant.address,
-    logo_url: '/logo.png',
+    logo_url: '/patel-logo-gold.png',
     developer_name: MENU_DATA.restaurant.developerName,
     developer_phone: MENU_DATA.restaurant.developerPhone,
     developer_credit_locked: true,

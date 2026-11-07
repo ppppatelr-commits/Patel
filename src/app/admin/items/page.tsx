@@ -648,7 +648,7 @@ export default function ItemsPage() {
               {editData.image_filename && (
                 <div className="flex items-center gap-3 p-3 rounded-lg bg-[#0a0a0a] border border-white/10">
                   <img
-                    src={editData.image_url || (editData.image_filename ? (editData.image_filename.includes('/') ? `/media/dishes/${editData.image_filename.replace(/^\/+/, '')}` : `/media/dishes/${catSlugMap.get(editData.category_id) || 'general'}/${editData.image_filename}`) : '/logo.png')}
+                    src={editData.image_url || (editData.image_filename ? (editData.image_filename.includes('/') ? `/media/dishes/${editData.image_filename.replace(/^\/+/, '')}` : `/media/dishes/${catSlugMap.get(editData.category_id) || 'general'}/${editData.image_filename}`) : '/patel-logo-gold.png')}
                     alt="Current"
                     className="h-16 w-16 object-cover rounded border border-white/10"
                     onError={(e) => {

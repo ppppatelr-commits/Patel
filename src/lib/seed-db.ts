@@ -74,7 +74,7 @@ export async function ensureSeeded(): Promise<boolean> {
         await writeRestaurant({
           restaurant: {
             name: MENU_DATA.restaurant.name || 'Patel Restaurant',
-            logo: '/logo.png',
+            logo: '/patel-logo-gold.png',
             address: MENU_DATA.restaurant.address || '',
             phone: MENU_DATA.restaurant.phone1 || '',
             whatsapp: MENU_DATA.restaurant.phone2 || '',

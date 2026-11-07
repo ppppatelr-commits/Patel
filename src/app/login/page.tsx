@@ -56,7 +56,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a] px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <img src="/logo.png" alt="Logo" className="mx-auto h-24 w-auto mb-4 object-contain" />
+          <img src="/patel-logo-gold.png" alt="Logo" className="mx-auto h-24 w-auto mb-4 object-contain" />
           <h1 className="text-2xl font-bold uppercase tracking-tight">Admin Login</h1>
           <p className="text-secondary text-sm">Patel Restaurant Dashboard</p>
         </div>

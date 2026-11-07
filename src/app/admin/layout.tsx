@@ -24,7 +24,7 @@ export default async function AdminLayout({
       <nav className="fixed inset-y-0 left-0 z-50 w-64 bg-[#141414] border-r border-white/10 flex flex-col">
         <div className="p-6 border-b border-white/10">
           <div className="flex items-center gap-3 mb-3">
-            <img src="/logo.png" alt="Logo" className="h-10 w-auto object-contain" />
+            <img src="/patel-logo-gold.png" alt="Logo" className="h-10 w-auto object-contain" />
             <div>
               <h2 className="text-lg font-bold uppercase tracking-tight text-[#d4af37]">Patel</h2>
               <p className="text-xs text-secondary">Admin Panel</p>

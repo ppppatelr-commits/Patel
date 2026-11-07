@@ -122,7 +122,7 @@ export default function QRCodeClient({ initialName, initialTagline }: QRCodeClie
           </span>
 
           <div id="printable-stand" ref={standRef} className="w-full max-w-sm bg-white text-black p-8 rounded-2xl shadow-2xl border-4 border-[#d4af37] my-4 flex flex-col items-center">
-            <img src="/logo.png" alt="Patel Restaurant" crossOrigin="anonymous" className="h-16 w-auto object-contain mb-2" />
+            <img src="/patel-logo-gold.png" alt="Patel Restaurant" crossOrigin="anonymous" className="h-16 w-auto object-contain mb-2" />
             <h2 className="text-xl font-black uppercase tracking-tight text-[#0a0a0a]">{restaurantName}</h2>
             {tagline ? (
               <p className="text-xs font-semibold text-[#8a7322] uppercase tracking-widest mb-4">{tagline}</p>

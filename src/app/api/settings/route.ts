@@ -32,7 +32,7 @@ export async function GET() {
       phone1: r?.phone || '',
       phone2: r?.whatsapp || '',
       tagline: '',
-      logoUrl: r?.logo || '/logo.png',
+      logoUrl: r?.logo || '/patel-logo-gold.png',
       address: r?.address || '',
       whatsapp: r?.whatsapp || '',
       openingHours: r?.openingHours || '',
@@ -89,7 +89,7 @@ export async function PUT(request: NextRequest) {
     const restData: RestaurantData = (await readRestaurant()) || {
       restaurant: {
         name: 'Patel Restaurant',
-        logo: '/logo.png',
+        logo: '/patel-logo-gold.png',
         address: '',
         phone: '',
         whatsapp: '',
@@ -100,7 +100,7 @@ export async function PUT(request: NextRequest) {
     restData.restaurant = {
       ...restData.restaurant,
       name: String(name).trim(),
-      logo: logoUrl || '/logo.png',
+      logo: logoUrl || '/patel-logo-gold.png',
       address: address || null,
       phone: phone1 || null,
       whatsapp: whatsapp || null,

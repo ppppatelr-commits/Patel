@@ -1,11 +1,13 @@
 import Link from 'next/link';
 import { getPublicMenu } from '@/lib/public-menu';
+import { SiteHeader } from '@/components/site-header';
+import { SiteFooter } from '@/components/site-footer';
 
 export const dynamic = 'force-dynamic';
 
 export default async function LandingPage() {
   const { settings } = await getPublicMenu();
-  const logo = settings.logo_url || '/logo.png';
+  const logo = settings.logo_url || '/patel-logo-gold.png';
   const name = settings.name || 'Patel Restaurant';
   const tagline =
     settings.tagline === undefined || settings.tagline === null
@@ -22,27 +24,7 @@ export default async function LandingPage() {
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white flex flex-col justify-between">
       {/* ── Header ─────────────────────────────────────────────────── */}
-      <header className="sticky top-0 z-40 bg-[#0a0a0a]/90 backdrop-blur border-b border-white/5">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
-          <Link href="/" className="flex items-center gap-2 group min-w-0">
-            <img src={logo} alt="Patel Restaurant" className="h-10 sm:h-12 w-auto object-contain group-hover:rotate-12 transition-transform duration-300 flex-shrink-0" />
-            <span className="text-sm sm:text-xl font-bold tracking-tight uppercase truncate">{name}</span>
-          </Link>
-          <div className="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm text-secondary flex-shrink-0">
-            {phones.map((phone, index) => (
-              <a
-                key={`${phone}-${index}`}
-                href={`tel:${phone.replace(/[^\d+]/g, '')}`}
-                className="hover:text-white transition-colors flex items-center gap-1"
-              >
-                <span className="text-[#d4af37]">📞</span>
-                <span className="hidden sm:inline">{phone}</span>
-                <span className="sm:hidden">Call</span>
-              </a>
-            ))}
-          </div>
-        </div>
-      </header>
+      <SiteHeader name={name} phones={phones} />
 
       {/* ── Hero ───────────────────────────────────────────────────── */}
       <section className="relative py-20 sm:py-32 text-center overflow-hidden flex-1 flex items-center justify-center">
@@ -76,21 +58,13 @@ export default async function LandingPage() {
       </section>
 
       {/* ── Footer ─────────────────────────────────────────────────── */}
-      <footer className="border-t border-white/10 bg-[#0a0a0a] pt-8 pb-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-3 flex-wrap">
-          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-            <img src={logo} alt="Patel Restaurant Logo" className="h-10 sm:h-12 w-auto object-contain flex-shrink-0" />
-            <span className="font-bold text-sm sm:text-lg uppercase tracking-tight truncate text-[#d4af37]">{name}</span>
-          </div>
-          <a
-            href="tel:+917303321019"
-            className="flex items-center gap-1 text-[#d4af37] underline decoration-[#d4af37]/40 hover:text-[#e6c850] hover:decoration-[#e6c850] transition-all font-semibold text-xs sm:text-sm flex-shrink-0"
-          >
-            <span>👨‍💻</span>
-            <span>Developed by Salman Furniturewala</span>
-          </a>
-        </div>
-      </footer>
+      <SiteFooter
+        name={name}
+        phones={phones}
+        address={settings.address}
+        developerName={settings.developer_name || 'Salman Furniturewala'}
+        developerPhone={settings.developer_phone || '+91 7303321019'}
+      />
     </div>
   );
 }

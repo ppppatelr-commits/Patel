@@ -9,7 +9,7 @@ export function useRestaurantSettings() {
     tagline: MENU_DATA.restaurant.tagline,
     phone1: MENU_DATA.restaurant.phone1,
     phone2: MENU_DATA.restaurant.phone2,
-    logoUrl: '/logo.png',
+    logoUrl: '/patel-logo-gold.png',
   });
 
   useEffect(() => {
@@ -24,7 +24,7 @@ export function useRestaurantSettings() {
           tagline: typeof s.tagline === 'string' ? s.tagline : MENU_DATA.restaurant.tagline,
           phone1: typeof s.phone1 === 'string' ? s.phone1 : MENU_DATA.restaurant.phone1,
           phone2: typeof s.phone2 === 'string' ? s.phone2 : MENU_DATA.restaurant.phone2,
-          logoUrl: typeof s.logoUrl === 'string' && s.logoUrl ? s.logoUrl : '/logo.png',
+          logoUrl: typeof s.logoUrl === 'string' && s.logoUrl ? s.logoUrl : '/patel-logo-gold.png',
         });
       })
       .catch(() => {

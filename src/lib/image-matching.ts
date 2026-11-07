@@ -64,9 +64,9 @@ export function isLogoOrPlaceholder(imagePath: string | null): boolean {
   return (
     lower.includes('logo') ||
     lower.includes('placeholder') ||
-    lower === '/logo.png' ||
+    lower === '/patel-logo-gold.png' ||
     lower === 'logo.png' ||
-    lower.endsWith('/logo.png')
+    lower.endsWith('/patel-logo-gold.png')
   );
 }
 

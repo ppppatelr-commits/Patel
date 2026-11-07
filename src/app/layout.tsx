@@ -8,8 +8,8 @@ export const metadata: Metadata = {
   title: 'PATEL RESTAURANT | Premium Digital QR Menu',
   description: 'Browse our premium menu categories and dishes at PATEL RESTAURANT',
   icons: {
-    icon: '/logo.png',
-    apple: '/logo.png',
+    icon: '/patel-logo-gold.png',
+    apple: '/patel-logo-gold.png',
   },
 };
 

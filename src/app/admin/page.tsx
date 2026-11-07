@@ -91,11 +91,11 @@ export default async function AdminDashboardPage() {
           </div>
           <div>
             <span className="text-secondary">Phone 1:</span>{' '}
-            <span className="text-white font-medium">{settings.phone_1}</span>
+            <span className="text-[#d4af37] font-medium">{settings.phone_1}</span>
           </div>
           <div>
             <span className="text-secondary">Phone 2:</span>{' '}
-            <span className="text-white font-medium">{settings.phone_2}</span>
+            <span className="text-[#d4af37] font-medium">{settings.phone_2}</span>
           </div>
           <div>
             <span className="text-secondary">Developer:</span>{' '}

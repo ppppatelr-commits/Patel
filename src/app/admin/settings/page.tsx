@@ -9,7 +9,7 @@ export default function SettingsPage() {
   const [tagline, setTagline] = useState<string>(MENU_DATA.restaurant.tagline);
   const [phone1, setPhone1] = useState<string>(MENU_DATA.restaurant.phone1);
   const [phone2, setPhone2] = useState<string>(MENU_DATA.restaurant.phone2);
-  const [logoUrl, setLogoUrl] = useState('/logo.png');
+  const [logoUrl, setLogoUrl] = useState('/patel-logo-gold.png');
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
@@ -119,7 +119,7 @@ export default function SettingsPage() {
           <label className="block text-sm font-medium text-white mb-2">Logo</label>
           <div className="flex items-center gap-4 mb-3">
             <img
-              src={logoUrl || '/logo.png'}
+              src={logoUrl || '/patel-logo-gold.png'}
               alt="Logo preview"
               className="h-16 w-auto object-contain rounded border border-white/10 bg-[#0a0a0a]"
             />
@@ -166,7 +166,7 @@ export default function SettingsPage() {
             value={logoUrl}
             onChange={(e) => setLogoUrl(e.target.value)}
             className="w-full px-4 py-3 rounded-lg bg-[#0a0a0a] border border-white/10 text-white focus:ring-2 focus:ring-[#d4af37] focus:outline-none"
-            placeholder="/logo.png"
+            placeholder="/patel-logo-gold.png"
           />
         </div>
 

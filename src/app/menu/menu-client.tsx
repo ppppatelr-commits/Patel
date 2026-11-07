@@ -79,8 +79,8 @@ export default function MenuClient({
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
           </Link>
           <div className="flex-1 min-w-0">
-            <strong className="block text-sm font-bold uppercase tracking-wide truncate">{settings?.name || 'Patel Restaurant'}</strong>
-            <span className="block text-xs text-secondary truncate">Discover Our Menu</span>
+            <strong className="block text-sm font-bold uppercase tracking-wide truncate text-[#d4af37]">{settings?.name || 'Patel Restaurant'}</strong>
+            <span className="block text-xs text-[#d4af37]/80 truncate">Discover Our Menu</span>
           </div>
           <button
             onClick={() => setShowQR(true)}
@@ -113,8 +113,8 @@ export default function MenuClient({
 
       <main className="max-w-7xl mx-auto px-4 py-6">
         <section className="mb-6">
-          <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tight text-white">Discover Our Menu</h1>
-          <p className="text-secondary text-sm mt-1">Premium Digital QR Menu • Scan & Browse</p>
+          <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tight text-[#d4af37]">Discover Our Menu</h1>
+          <p className="text-[#d4af37]/80 text-sm mt-1">Premium Digital QR Menu • Scan & Browse</p>
         </section>
 
         {searchQuery && (
@@ -200,7 +200,7 @@ export default function MenuClient({
       {showQR && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" onClick={(e) => { if (e.target === e.currentTarget) setShowQR(false); }}>
           <div className="bg-[#141414] border border-[#d4af37]/30 rounded-2xl p-6 max-w-xs w-full text-center shadow-2xl">
-            <h3 className="text-lg font-bold text-white uppercase tracking-tight mb-1">{settings?.name || 'Patel Restaurant'}</h3>
+            <h3 className="text-lg font-bold text-[#d4af37] uppercase tracking-tight mb-1">{settings?.name || 'Patel Restaurant'}</h3>
             <p className="text-xs text-[#d4af37] font-semibold uppercase tracking-wider mb-4">Table Digital Menu QR</p>
             <div className="bg-white p-3 rounded-xl inline-block mb-3 shadow-inner">
               <img src="/qr-menu.png" alt="QR Code" className="w-48 h-48 object-contain mx-auto" />
@@ -238,13 +238,16 @@ export default function MenuClient({
         </div>
       )}
 
-      <footer className="mt-16 border-t border-white/10 bg-[#0a0a0a] pt-8 pb-8">
-        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <img src={settings?.logo_url || '/logo.png'} alt="Hindustan Restaurant Logo" className="h-10 sm:h-12 w-auto object-contain" />
-            <span className="font-bold text-lg uppercase tracking-tight">{settings?.name || 'Patel Restaurant'}</span>
+      <footer className="mt-16 bg-[#0a0a0a] border-t border-[#d4af37]/30 pt-10 pb-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="flex flex-col items-center gap-3 text-center">
+            <img src="/patel-logo-gold.png" alt="Patel Restaurant Logo" className="h-14 sm:h-16 w-auto object-contain" />
+            <span className="font-bold text-lg sm:text-xl uppercase tracking-[0.2em] text-[#d4af37]">{settings?.name || 'Patel Restaurant'}</span>
           </div>
-          <DeveloperCredit phone="+917303321019" name="Salman Furniturewala" />
+          <div className="mt-6 pt-4 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-[#a1a1aa]">
+            <span>© 2026 {settings?.name || 'Patel Restaurant'}. All Rights Reserved.</span>
+            <DeveloperCredit phone="+917303321019" name="Salman Furniturewala" />
+          </div>
         </div>
       </footer>
     </div>

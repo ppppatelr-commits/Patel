@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
       await writeRestaurant({
         restaurant: {
           name: dbExport.restaurant.name || 'Patel Restaurant',
-          logo: dbExport.restaurant.logo || '/logo.png',
+          logo: dbExport.restaurant.logo || '/patel-logo-gold.png',
           address: dbExport.restaurant.address || null,
           phone: dbExport.restaurant.phone || null,
           whatsapp: dbExport.restaurant.whatsapp || null,

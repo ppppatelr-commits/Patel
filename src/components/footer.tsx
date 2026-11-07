@@ -11,7 +11,7 @@ export function PhoneLink({ number, className }: FooterLinkProps) {
   return (
     <a href={`tel:${number.replace(/\s/g, '')}`} className={`flex items-center gap-1 ${className ?? ''}`}>
       <span className="text-[#d4af37]">📞</span>
-      <span>{number}</span>
+      <span className="text-[#d4af37]">{number}</span>
     </a>
   );
 }
@@ -19,7 +19,7 @@ export function PhoneLink({ number, className }: FooterLinkProps) {
 export function Logo({ className }: { className?: string }) {
   return (
     <img
-      src="/logo.png"
+      src="/patel-logo-gold.png"
       alt="Patel Restaurant Logo"
       className={`object-contain ${className ?? 'h-10 w-auto'}`}
     />
@@ -30,10 +30,9 @@ export function DeveloperCredit({ phone, name }: { phone: string; name: string }
   return (
     <a
       href={`tel:${phone.replace(/\s/g, '')}`}
-      className="flex items-center gap-1 text-[#d4af37] underline decoration-[#d4af37]/40 hover:text-[#e6c850] hover:decoration-[#e6c850] transition-all font-semibold text-sm"
+      className="text-xs text-[#a1a1aa] hover:text-[#d4af37] transition-colors"
     >
-      <span>👨‍💻</span>
-      <span>Developed by {name}</span>
+      Developed by {name}
     </a>
   );
 }
