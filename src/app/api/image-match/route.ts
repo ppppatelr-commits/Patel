@@ -59,8 +59,13 @@ export async function GET(request: NextRequest) {
       } else if (isDuplicate) {
         status = 'needs_review';
       } else {
-        // Preserve existing status if valid (uploaded/generated/matched)
-        status = (item as any).imageStatus || 'matched';
+        // Preserve uploaded/generated; otherwise mark matched
+        const prev = (item as any).imageStatus;
+        if (prev === 'uploaded' || prev === 'generated') {
+          status = prev;
+        } else {
+          status = 'matched';
+        }
       }
 
       return {
