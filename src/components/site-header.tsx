@@ -22,7 +22,7 @@ export function SiteHeader({ name, phones }: SiteHeaderProps) {
           />
           </Link>
 
-        <div className="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm text-white flex-shrink-0">
+        <div className="hidden md:flex items-center gap-2 sm:gap-4 text-xs sm:text-sm text-white flex-shrink-0">
           {phones.map((phone, index) => (
             <a
               key={`${phone}-${index}`}
@@ -35,28 +35,18 @@ export function SiteHeader({ name, phones }: SiteHeaderProps) {
           ))}
         </div>
 
-        <button
-          type="button"
-          className="md:hidden w-10 h-10 grid place-items-center rounded-lg border border-white/10 bg-white/10 text-white hover:bg-white/20 transition-colors"
-          onClick={() => setOpen((v) => !v)}
-          aria-label="Toggle menu"
-          aria-expanded={open}
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            {open ? (
-              <>
-                <path d="M18 6L6 18" />
-                <path d="M6 6l12 12" />
-              </>
-            ) : (
-              <>
-                <path d="M3 12h18" />
-                <path d="M3 6h18" />
-                <path d="M3 18h18" />
-              </>
-            )}
-          </svg>
-        </button>
+        {phones.length > 0 && (
+          <button
+            type="button"
+            className="md:hidden inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-[#d4af37]/40 text-[#d4af37] hover:bg-[#d4af37]/10 transition-colors text-sm font-semibold"
+            onClick={() => setOpen((v) => !v)}
+            aria-label="Call"
+            aria-expanded={open}
+          >
+            <span className="text-[#d4af37]">📞</span>
+            <span>Call</span>
+          </button>
+        )}
       </div>
 
       {open && (
