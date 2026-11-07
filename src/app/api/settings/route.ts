@@ -103,7 +103,7 @@ export async function PUT(request: NextRequest) {
       logo: logoUrl || '/patel-logo-gold.png',
       address: address || null,
       phone: phone1 || null,
-      whatsapp: whatsapp || null,
+      whatsapp: phone2 || whatsapp || null,
       openingHours: openingHours || null,
       contactEmail: contactEmail || null,
       socialLinks: socialLinks || null,

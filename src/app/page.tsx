@@ -32,7 +32,7 @@ export default async function LandingPage() {
           <img
             src={logo}
             alt="Logo"
-            className="mx-auto h-52 sm:h-64 md:h-72 w-auto max-w-full object-contain mb-8 opacity-95"
+            className="mx-auto h-32 sm:h-48 md:h-56 w-auto max-w-full object-contain mb-8 opacity-95"
             style={{ filter: 'drop-shadow(0 0 24px rgba(212,175,55,0.3))' }}
           />
           {/* Brand name is part of the logo; avoid duplicate oversized text */}
