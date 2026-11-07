@@ -35,9 +35,7 @@ export default async function LandingPage() {
             className="mx-auto h-52 sm:h-64 md:h-72 w-auto max-w-full object-contain mb-8 opacity-95"
             style={{ filter: 'drop-shadow(0 0 24px rgba(212,175,55,0.3))' }}
           />
-          <h1 className="text-4xl sm:text-6xl md:text-7xl font-black uppercase tracking-tighter mb-4 text-[#d4af37] leading-tight">
-            {name}
-          </h1>
+          {/* Brand name is part of the logo; avoid duplicate oversized text */}
           {tagline && tagline.trim() && (
             <p className="text-lg sm:text-2xl md:text-3xl text-[#d4af37] font-semibold uppercase tracking-wider mb-10">
               <span className="block">{taglineMain}</span>
