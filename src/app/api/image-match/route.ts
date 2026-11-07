@@ -39,9 +39,6 @@ export async function GET(request: NextRequest) {
     // Detect duplicate image assignments
     const duplicates = detectDuplicateImages(items.map((i) => ({ id: i.id, name: i.name, image: i.image ?? null })));
 
-    // Auto-assign exact matches for items where the current image is missing or doesn't exist
-    const autoAssignments: Array<{ itemId: string; imagePath: string }> = [];
-
     const result = items.map((item) => {
       // Check if the image actually exists in GitHub
       const imageExists = item.image ? availableImagePaths.has(item.image) : false;
@@ -55,47 +52,15 @@ export async function GET(request: NextRequest) {
       const isDuplicate = item.image ? (duplicates.get(item.image)?.length || 0) > 1 : false;
 
       let status: string;
-      if (!item.image) {
-        if (bestMatch) {
-          // Auto-assign exact match
-          autoAssignments.push({ itemId: item.id, imagePath: bestMatch.path });
-          status = 'matched';
-        } else if (matches.length > 0) {
-          status = 'needs_review';
-        } else {
-          status = 'missing';
-        }
+      if (!item.image || !imageExists) {
+        status = 'missing';
       } else if (isLogo) {
-        // Logo/placeholder — never mark as matched
-        if (bestMatch) {
-          autoAssignments.push({ itemId: item.id, imagePath: bestMatch.path });
-          status = 'matched';
-        } else {
-          status = matches.length > 0 ? 'needs_review' : 'missing';
-        }
-      } else if (!imageExists) {
-        // Image referenced but file doesn't exist in GitHub
-        if (bestMatch) {
-          autoAssignments.push({ itemId: item.id, imagePath: bestMatch.path });
-          status = 'matched';
-        } else if (matches.length > 0) {
-          status = 'needs_review';
-        } else {
-          status = 'missing';
-        }
+        status = 'missing';
       } else if (isDuplicate) {
-        // Same image used for multiple dishes — needs review
-        status = 'needs_review';
-      } else if (bestMatch && bestMatch.path === item.image) {
-        status = 'matched';
-      } else if (bestMatch) {
-        // Image exists but a better match is available
-        status = 'needs_review';
-      } else if (matches.length > 0) {
         status = 'needs_review';
       } else {
-        // Image exists but doesn't match dish name
-        status = 'needs_review';
+        // Preserve existing status if valid (uploaded/generated/matched)
+        status = (item as any).imageStatus || 'matched';
       }
 
       return {
@@ -113,21 +78,6 @@ export async function GET(request: NextRequest) {
       };
     });
 
-    // Apply auto-assignments (write to GitHub)
-    if (autoAssignments.length > 0) {
-      const menuData = await readMenu();
-      if (menuData) {
-        for (const assignment of autoAssignments) {
-          const itemIndex = menuData.items.findIndex((i) => i.id === assignment.itemId);
-          if (itemIndex !== -1) {
-            menuData.items[itemIndex].image = assignment.imagePath;
-            menuData.items[itemIndex].imageStatus = 'matched';
-            menuData.items[itemIndex].updatedAt = new Date().toISOString();
-          }
-        }
-        await writeMenu(menuData);
-      }
-    }
 
     return NextResponse.json(result);
 
