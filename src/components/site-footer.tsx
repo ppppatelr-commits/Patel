@@ -16,7 +16,7 @@ export function SiteFooter({ name, phones, address, developerName, developerPhon
           <img
             src="/patel-logo-gold.png"
             alt="Patel Restaurant Logo"
-            className="h-10 sm:h-12 w-auto object-contain flex-shrink-0"
+            className="h-8 sm:h-9 w-auto object-contain flex-shrink-0"
           />
           <span className="font-bold text-sm sm:text-lg uppercase tracking-tight truncate text-[#d4af37]">
             {name}

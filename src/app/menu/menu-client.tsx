@@ -241,7 +241,7 @@ export default function MenuClient({
       <footer className="mt-16 bg-[#0a0a0a] border-t border-[#d4af37]/30 py-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-            <img src="/patel-logo-gold.png" alt="Patel Restaurant Logo" className="h-10 sm:h-12 w-auto object-contain flex-shrink-0" />
+            <img src="/patel-logo-gold.png" alt="Patel Restaurant Logo" className="h-8 sm:h-9 w-auto object-contain flex-shrink-0" />
             <span className="font-bold text-sm sm:text-lg uppercase tracking-tight truncate text-[#d4af37]">{settings?.name || 'Patel Restaurant'}</span>
           </div>
           <DeveloperCredit phone="+917303321019" name="Salman Furniturewala" />
