@@ -4,7 +4,6 @@ import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth';
 import { getPublicMenu } from '@/lib/public-menu';
 import { getUnifiedMediaList } from '@/lib/media-list';
-import { MENU_DATA } from '@/lib/menu-data';
 
 export default async function AdminDashboardPage() {
   const session = await getSession();
@@ -18,7 +17,6 @@ export default async function AdminDashboardPage() {
   // Stats (live menu store, not the static PDF data)
   const menu = await getPublicMenu();
   const categories = menu.categories;
-  const totalItems = menu.items.length;
 
   const settings = {
     name: menu.settings.name,
@@ -27,14 +25,21 @@ export default async function AdminDashboardPage() {
     developer_name: menu.settings.developer_name,
   };
 
-  const itemsRecord = MENU_DATA.items as unknown as Record<string, { name: string; price: number }[]>;
-  const allDishEntries: { dish: string; category: string }[] = [];
-  for (const [cat, catItems] of Object.entries(itemsRecord)) {
-    for (const d of catItems) allDishEntries.push({ dish: d.name, category: cat });
-  }
+  const supportedExt = new Set(['webp', 'png', 'jpg', 'jpeg', 'gif']);
+
+  // Unique menu items by id (no duplicates)
+  const uniqueItems = Array.from(
+    new Map(menu.items.map((it) => [it.id, it])).values()
+  );
+
+  // Unique categories by id
+  const uniqueCategories = Array.from(
+    new Map(menu.categories.map((c) => [c.id, c])).values()
+  );
 
   const mediaItems: any[] = [];
-  let itemsMissingImagesCount = allDishEntries.length;
+  let mediaCount = 0;
+  let itemsMissingImagesCount = 0;
 
   try {
     const unified = await getUnifiedMediaList();
@@ -50,16 +55,43 @@ export default async function AdminDashboardPage() {
       });
     }
 
-    const covered = new Set<string>();
-    for (const item of mediaItems) {
-      if (item.status === 'active' && item.dish_name) covered.add(item.dish_name.toLowerCase());
+    // Count unique supported image files (by path) in the media library
+    const uniqueMediaPaths = new Set<string>();
+    for (const m of mediaItems) {
+      const ext = (m.filename || '').split('.').pop()?.toLowerCase() || '';
+      if (supportedExt.has(ext) && m.status === 'active') {
+        uniqueMediaPaths.add(m.file_url || m.filename);
+      }
     }
-    itemsMissingImagesCount = allDishEntries.filter((d) => !covered.has(d.dish.toLowerCase())).length;
+    mediaCount = uniqueMediaPaths.size;
+
+    // Build a set of available image paths for existence checks
+    const availableImagePaths = new Set<string>();
+    for (const m of mediaItems) {
+      if (m.file_url) availableImagePaths.add(String(m.file_url).replace(/^\//, ''));
+      if (m.filename) availableImagePaths.add(String(m.filename));
+    }
+
+    // Missing images: item image empty or not present in media library
+    for (const item of uniqueItems) {
+      const img = (item as any).image_url || (item as any).image;
+      if (!img || String(img).trim() === '') {
+        itemsMissingImagesCount += 1;
+        continue;
+      }
+      const normalized = String(img).replace(/^\//, '');
+      // Also handle image_filename-based paths
+      const exists =
+        availableImagePaths.has(normalized) ||
+        availableImagePaths.has(normalized.split('/').pop() || '');
+      if (!exists) itemsMissingImagesCount += 1;
+    }
   } catch (err) {
     // ignore
   }
 
-  const mediaCount = mediaItems.length;
+  const totalCategories = uniqueCategories.length;
+  const totalItems = uniqueItems.length;
 
   return (
     <div className="space-y-8">
@@ -70,7 +102,7 @@ export default async function AdminDashboardPage() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
         <a href="/admin/categories" className="block">
-          <StatCard label="Total Categories" value={categories.length} icon="📂" />
+          <StatCard label="Total Categories" value={totalCategories} icon="📂" />
         </a>
         <a href="/admin/items" className="block">
           <StatCard label="Total Menu Items" value={totalItems} icon="🍽️" />
