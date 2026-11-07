@@ -5,7 +5,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { listAllImages, listCategoryImages } from '@/lib/image-store';
+import { listAllImages, listCategoryImages, invalidateImageListCache } from '@/lib/image-store';
 
 export const dynamic = 'force-dynamic';
 
@@ -123,6 +123,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
+    invalidateImageListCache();
     return NextResponse.json({ success: true, deleted: true });
   } catch (err) {
     console.error('Media DELETE error:', err);

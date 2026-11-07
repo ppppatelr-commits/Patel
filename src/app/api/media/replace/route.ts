@@ -9,6 +9,7 @@ import {
   dishImagePath,
   sanitizeCategorySlug,
   sanitizeDishFilename,
+  invalidateImageListCache,
 } from '@/lib/image-store';
 
 export const dynamic = 'force-dynamic';
@@ -67,6 +68,7 @@ export async function POST(request: NextRequest) {
       `Replace image: ${dishSlug} (${catSlug})`
     );
 
+    invalidateImageListCache();
     return NextResponse.json({
       success: true,
       filename: result.path.split('/').pop(),

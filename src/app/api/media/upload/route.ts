@@ -5,7 +5,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { uploadDishImage } from '@/lib/image-store';
+import { uploadDishImage, invalidateImageListCache } from '@/lib/image-store';
 
 export const dynamic = 'force-dynamic';
 
@@ -47,6 +47,7 @@ export async function POST(request: NextRequest) {
       subfolder
     );
 
+    invalidateImageListCache();
     return NextResponse.json({
       success: true,
       filename: result.path.split('/').pop(),

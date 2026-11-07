@@ -248,6 +248,13 @@ export async function listCategoryImages(
 /**
  * Lists all images across all categories.
  */
+let _listAllImagesCache: { data: Array<{ name: string; path: string; size: number; category: string; downloadUrl: string | null }>; ts: number } | null = null;
+
+export function invalidateImageListCache() {
+  _listAllImagesCache = null;
+}
+const LIST_CACHE_TTL_MS = 5 * 60 * 1000;
+
 export async function listAllImages(): Promise<Array<{
   name: string;
   path: string;
@@ -255,6 +262,10 @@ export async function listAllImages(): Promise<Array<{
   category: string;
   downloadUrl: string | null;
 }>> {
+  if (_listAllImagesCache && Date.now() - _listAllImagesCache.ts < LIST_CACHE_TTL_MS) {
+    return _listAllImagesCache.data;
+  }
+
   const root = 'media/dishes';
   const categories = await listGitHubDirectory(root);
 
@@ -280,6 +291,7 @@ export async function listAllImages(): Promise<Array<{
     }
   }
 
+  _listAllImagesCache = { data: result, ts: Date.now() };
   return result;
 }
 
