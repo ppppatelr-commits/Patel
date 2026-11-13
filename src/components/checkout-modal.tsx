@@ -8,7 +8,6 @@ import { DELIVERY_ZONES, getZoneById, isServiceableZone, zoneForRadius, RESTAURA
 import dynamic from 'next/dynamic';
 
 const DeliveryMap = dynamic(() => import('@/components/delivery-map'), { ssr: false });
-import AddressSearch from '@/components/address-search';
 
 interface CheckoutModalProps {
   open: boolean;
@@ -216,18 +215,6 @@ export default function CheckoutModal({ open, onClose, initial, subtotal, onSubm
                 <input className={inputCls()} value={form.landmark} onChange={(e) => set('landmark', e.target.value)} placeholder="Landmark" />
               </div>
 
-              {/* Address search */}
-              <div>
-                <label className="block text-xs text-secondary mb-1">Search Delivery Address</label>
-                <AddressSearch
-                  onSelect={(label, lat, lng) => {
-                    set('area', label);
-                    setForm((f) => ({ ...f, customerLat: lat, customerLng: lng }));
-                    updateZoneFromCoords(lat, lng);
-                  }}
-                />
-              </div>
-
               {/* Current location */}
               <button
                 type="button"
@@ -238,16 +225,15 @@ export default function CheckoutModal({ open, onClose, initial, subtotal, onSubm
               </button>
 
               {/* Map */}
-              {form.customerLat != null && form.customerLng != null && (
-                <div className="space-y-2">
-                  <DeliveryMap
-                    lat={form.customerLat}
-                    lng={form.customerLng}
-                    onChange={(lat, lng) => {
-                      setForm((f) => ({ ...f, customerLat: lat, customerLng: lng }));
-                      updateZoneFromCoords(lat, lng);
-                    }}
-                  />
+              <div className="space-y-2">
+                <DeliveryMap
+                  lat={form.customerLat ?? RESTAURANT_ORIGIN.lat}
+                  lng={form.customerLng ?? RESTAURANT_ORIGIN.lng}
+                  onChange={(lat, lng) => {
+                    setForm((f) => ({ ...f, customerLat: lat, customerLng: lng }));
+                    updateZoneFromCoords(lat, lng);
+                  }}
+                />
                   <p className="text-xs text-secondary">
                     Straight-line distance: {form.straightLineKm != null ? form.straightLineKm.toFixed(2) + ' km' : '...'}
                     {form.roadDistanceKm != null ? ` | Road distance: ${form.roadDistanceKm.toFixed(2)} km` : ''}
@@ -264,7 +250,6 @@ export default function CheckoutModal({ open, onClose, initial, subtotal, onSubm
                     </p>
                   )}
                 </div>
-              )}
 
               <div>
                 <label className="block text-xs text-secondary mb-1">Delivery Location Pin (optional)</label>
