@@ -1,9 +1,34 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { MenuItem, MenuCategory, RestaurantSettings } from '@/types';
 import { DeveloperCredit } from '@/components/footer';
+import CartDrawer from '@/components/cart-drawer';
+import CheckoutModal from '@/components/checkout-modal';
+import OrderReview from '@/components/order-review';
+import StickyCartBar from '@/components/sticky-cart-bar';
+import InfoPopup from '@/components/info-popup';
+import {
+  CartItem,
+  CustomerInfo,
+  CART_STORAGE_KEY,
+  emptyCustomer,
+  formatINR,
+  cartSubtotal,
+  cartTotalQty,
+  syncCartWithMenu,
+  generateOrderMessage,
+  generateModifyCancelMessage,
+  buildWhatsAppUrl,
+} from '@/lib/cart';
+import {
+  isRotiOrChapatiName,
+  inferZoneFromArea,
+  getZoneById,
+  isServiceableZone,
+  rotiOnlyRestrictionMessage,
+} from '@/lib/delivery';
 
 interface MenuClientProps {
   initialSettings: RestaurantSettings;
@@ -46,7 +71,194 @@ export default function MenuClient({
   const [searchQuery, setSearchQuery] = useState('');
   const [searchOpen, setSearchOpen] = useState(false);
   const [previewItem, setPreviewItem] = useState<MenuItem | null>(null);
+  const [previewQty, setPreviewQty] = useState(1);
+  const [previewAdded, setPreviewAdded] = useState(false);
   const [showQR, setShowQR] = useState(false);
+
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [cartLoaded, setCartLoaded] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [reviewOpen, setReviewOpen] = useState(false);
+  const [customerInfo, setCustomerInfo] = useState<CustomerInfo>(emptyCustomer());
+  const [syncNotice, setSyncNotice] = useState<string[]>([]);
+  const [orderSent, setOrderSent] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
+  const [popup, setPopup] = useState<{ title: string; message: string } | null>(null);
+
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(CART_STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) setCart(parsed);
+      }
+      const sent = window.localStorage.getItem('patel_order_sent_v1');
+      if (sent === '1') setOrderSent(true);
+    } catch {}
+    setCartLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (!cartLoaded) return;
+    try {
+      window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+    } catch {}
+  }, [cart, cartLoaded]);
+
+  useEffect(() => {
+    if (!cartLoaded) return;
+    try {
+      window.localStorage.setItem('patel_order_sent_v1', orderSent ? '1' : '0');
+    } catch {}
+  }, [orderSent, cartLoaded]);
+
+  const syncCart = () => {
+    const { cart: next, changes } = syncCartWithMenu(cart, items);
+    setCart(next);
+    setSyncNotice(changes);
+    return changes;
+  };
+
+  const addToCart = (item: MenuItem, qty: number) => {
+    const image = dishImageUrl(item, categories);
+    setCart((prev) => {
+      const existing = prev.find((c) => c.id === item.id);
+      if (existing) {
+        return prev.map((c) => (c.id === item.id ? { ...c, qty: c.qty + qty, price: item.price, name: item.name, image } : c));
+      }
+      return [...prev, { id: item.id, name: item.name, price: item.price, image, qty }];
+    });
+    setToast(`${item.name} added to your cart`);
+    window.setTimeout(() => setToast(null), 2000);
+  };
+
+  const increaseQty = (id: string) => {
+    setCart((prev) => prev.map((c) => (c.id === id ? { ...c, qty: c.qty + 1 } : c)));
+  };
+
+  const decreaseQty = (id: string) => {
+    setCart((prev) =>
+      prev
+        .map((c) => (c.id === id ? { ...c, qty: c.qty - 1 } : c))
+        .filter((c) => c.qty > 0)
+    );
+  };
+
+  const removeItem = (id: string) => {
+    setCart((prev) => prev.filter((c) => c.id !== id));
+  };
+
+  const clearCart = () => {
+    if (window.confirm('Clear all items from your cart?')) {
+      setCart([]);
+      setOrderSent(false);
+    }
+  };
+
+  const openCart = () => {
+    syncCart();
+    setCartOpen(true);
+  };
+
+  const openCheckout = () => {
+    const { cart: next, changes } = syncCartWithMenu(cart, items);
+    setCart(next);
+    setSyncNotice(changes);
+    if (next.length === 0) return;
+    if (next.length > 0 && next.every((c) => isRotiOrChapatiName(c.name))) {
+      setPopup({ title: 'Minimum Order Requirement', message: rotiOnlyRestrictionMessage() });
+      return;
+    }
+    setCartOpen(false);
+    setCheckoutOpen(true);
+  };
+
+  const handleCheckoutSubmit = (info: CustomerInfo) => {
+    const { cart: next } = syncCartWithMenu(cart, items);
+    setCart(next);
+    if (next.length === 0) return;
+    if (next.every((c) => isRotiOrChapatiName(c.name))) {
+      setPopup({ title: 'Minimum Order Requirement', message: rotiOnlyRestrictionMessage() });
+      return;
+    }
+    if (info.orderType === 'delivery') {
+      const zone = getZoneById(info.deliveryZone);
+      if (!zone || !isServiceableZone(info.deliveryZone)) {
+        setPopup({ title: 'Delivery Unavailable', message: 'Sorry! We currently do not provide delivery to this location. Please contact Patel Restaurant for assistance.' });
+        return;
+      }
+      const subtotalNow = cartSubtotal(next);
+      if (subtotalNow < zone.minOrder) {
+        setPopup({
+          title: 'Minimum Order Requirement',
+          message: `Your minimum order amount is ₹${zone.minOrder}. Add ₹${zone.minOrder - subtotalNow} more to place your order.`,
+        });
+        return;
+      }
+      info.minOrder = zone.minOrder;
+      info.deliveryZoneName = zone.name;
+    } else {
+      info.minOrder = 0;
+      info.deliveryZone = '';
+      info.deliveryZoneName = '';
+    }
+    setCustomerInfo(info);
+    setCheckoutOpen(false);
+    setReviewOpen(true);
+  };
+
+  const openWhatsApp = (url: string) => {
+    const a = document.createElement('a');
+    a.href = url;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
+  const handlePlaceOrder = () => {
+    const { cart: next } = syncCartWithMenu(cart, items);
+    setCart(next);
+    if (next.length === 0) {
+      setPopup({ title: 'Empty Cart', message: 'Your cart is empty. Please add items before placing an order.' });
+      return;
+    }
+    if (next.every((c) => isRotiOrChapatiName(c.name))) {
+      setPopup({ title: 'Minimum Order Requirement', message: rotiOnlyRestrictionMessage() });
+      return;
+    }
+    if (customerInfo.orderType === 'delivery') {
+      const zone = getZoneById(customerInfo.deliveryZone);
+      if (!zone || !isServiceableZone(customerInfo.deliveryZone)) {
+        setPopup({ title: 'Delivery Unavailable', message: 'Sorry! We currently do not provide delivery to this location. Please contact Patel Restaurant for assistance.' });
+        return;
+      }
+      if (customerInfo.roadDistanceKm == null) {
+        setPopup({ title: 'Delivery Unavailable', message: 'Unable to verify delivery distance. Please retry or contact the restaurant.' });
+        return;
+      }
+      const subtotalNow = cartSubtotal(next);
+      if (subtotalNow < zone.minOrder) {
+        setPopup({ title: 'Minimum Order Requirement', message: `Your minimum order amount is ₹${zone.minOrder}. Add ₹${zone.minOrder - subtotalNow} more to place your order.` });
+        return;
+      }
+    }
+    const msg = generateOrderMessage(next, customerInfo, orderSent);
+    const url = buildWhatsAppUrl(msg);
+    setOrderSent(true);
+    openWhatsApp(url);
+  };
+
+  const handleModifyCancel = () => {
+    const info = customerInfo.name || customerInfo.mobile ? customerInfo : emptyCustomer();
+    const url = buildWhatsAppUrl(generateModifyCancelMessage(info));
+    openWhatsApp(url);
+  };
+
+  const cartCount = cartTotalQty(cart);
+  const isRotiOnlyCart = cart.length > 0 && cart.every((c) => isRotiOrChapatiName(c.name));
 
   const itemCountByCategory = (catId: string) => items.filter((i) => i.category_id === catId && i.is_available).length;
 
@@ -83,6 +295,19 @@ export default function MenuClient({
             <span className="block text-xs text-[#d4af37]/80 truncate">Discover Our Menu</span>
           </div>
           <button
+            onClick={openCart}
+            className="relative w-9 h-9 grid place-items-center rounded-xl border border-white/10 bg-[#1a1a1a] text-[#d4af37] hover:bg-[#222] transition-colors"
+            title="Cart"
+            aria-label="Open cart"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+            {cartCount > 0 && (
+              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-[#d4af37] text-[#0a0a0a] text-[10px] font-bold grid place-items-center">
+                {cartCount}
+              </span>
+            )}
+          </button>
+          <button
             onClick={() => setShowQR(true)}
             className="w-9 h-9 grid place-items-center rounded-xl border border-white/10 bg-[#1a1a1a] text-[#d4af37] hover:bg-[#222] transition-colors"
             title="Table QR Code"
@@ -111,7 +336,7 @@ export default function MenuClient({
         )}
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 py-6">
+      <main className={`max-w-7xl mx-auto px-4 py-6 ${cartCount > 0 ? 'pb-24 sm:pb-6' : ''}`}>
         <section className="mb-6">
           <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tight text-[#d4af37]">Discover Our Menu</h1>
           <p className="text-[#d4af37]/80 text-sm mt-1">Premium Digital QR Menu • Scan & Browse</p>
@@ -163,7 +388,7 @@ export default function MenuClient({
                 displayedItems.map((item) => (
                   <button
                     key={item.id}
-                    onClick={() => setPreviewItem(item)}
+                    onClick={() => { setPreviewItem(item); setPreviewQty(1); setPreviewAdded(false); }}
                     className="grid grid-cols-[104px_minmax(0,1fr)] gap-3 items-stretch bg-[#1a1a1a] border border-white/10 rounded-2xl p-3 text-left hover:border-[#d4af37]/40 transition-all hover:-translate-y-0.5"
                   >
                     <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-[#0a0a0a]">
@@ -230,11 +455,91 @@ export default function MenuClient({
               {(previewItem.description || DISH_DESCRIPTIONS[previewItem.name]) && (
                 <p className="text-secondary text-sm mt-3">{previewItem.description || DISH_DESCRIPTIONS[previewItem.name]}</p>
               )}
-              <div className="mt-4 pt-4 border-t border-white/5 flex flex-wrap gap-2">
+              <div className="mt-4 pt-4 border-t border-white/5 flex flex-wrap gap-2 items-center">
                 <span className="text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full bg-[#d4af37]/15 text-[#d4af37]">Available</span>
+                <div className="ml-auto flex items-center gap-2">
+                  <button
+                    onClick={() => setPreviewQty((q) => Math.max(1, q - 1))}
+                    className="w-9 h-9 grid place-items-center rounded-xl border border-white/10 bg-[#0a0a0a] text-white hover:text-[#d4af37]"
+                  >
+                    -
+                  </button>
+                  <span className="w-8 text-center text-sm font-semibold">{previewQty}</span>
+                  <button
+                    onClick={() => setPreviewQty((q) => q + 1)}
+                    className="w-9 h-9 grid place-items-center rounded-xl border border-white/10 bg-[#0a0a0a] text-white hover:text-[#d4af37]"
+                  >
+                    +
+                  </button>
+                </div>
               </div>
+              <button
+                onClick={() => {
+                  if (previewAdded) return;
+                  addToCart(previewItem, previewQty);
+                  setPreviewAdded(true);
+                  window.setTimeout(() => {
+                    setPreviewItem(null);
+                    setPreviewQty(1);
+                    setPreviewAdded(false);
+                  }, 900);
+                }}
+                disabled={previewAdded}
+                className="mt-4 w-full py-3 rounded-xl bg-[#d4af37] text-[#0a0a0a] font-bold text-sm hover:bg-[#e6c850] disabled:opacity-70"
+              >
+                {previewAdded ? 'Added ✓' : `Add to Cart - ${formatINR(previewItem.price * previewQty)}`}
+              </button>
             </div>
           </div>
+        </div>
+      )}
+
+      <CartDrawer
+        open={cartOpen}
+        onClose={() => setCartOpen(false)}
+        cart={cart}
+        notice={syncNotice}
+        onIncrease={increaseQty}
+        onDecrease={decreaseQty}
+        onRemove={removeItem}
+        onClear={clearCart}
+        onCheckout={openCheckout}
+        onContinue={() => { setCartOpen(false); }}
+        onModifyCancel={handleModifyCancel}
+      />
+
+      <CheckoutModal
+        open={checkoutOpen}
+        onClose={() => setCheckoutOpen(false)}
+        initial={customerInfo}
+        subtotal={cartSubtotal(cart)}
+        onSubmit={handleCheckoutSubmit}
+        onBackToCart={() => { setCheckoutOpen(false); setCartOpen(true); }}
+      />
+
+      <OrderReview
+        open={reviewOpen}
+        cart={cart}
+        customer={customerInfo}
+        onEditCart={() => { setReviewOpen(false); setCartOpen(true); }}
+        onEditDetails={() => { setReviewOpen(false); setCheckoutOpen(true); }}
+        onContinueShopping={() => { setReviewOpen(false); }}
+        onPlaceOrder={handlePlaceOrder}
+        onClose={() => setReviewOpen(false)}
+      />
+
+      <StickyCartBar count={cartCount} subtotal={cartSubtotal(cart)} visible={cartCount > 0 && !previewItem && !cartOpen && !checkoutOpen && !reviewOpen} onViewCart={openCart} />
+
+      <InfoPopup
+        open={!!popup}
+        title={popup?.title || ''}
+        message={popup?.message || ''}
+        onClose={() => setPopup(null)}
+      />
+
+      {toast && (
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[80] bg-[#1a1a1a] border border-[#d4af37]/40 text-white text-sm px-4 py-2.5 rounded-xl shadow-2xl">
+          {toast}
         </div>
       )}
 
