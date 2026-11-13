@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import type { CustomerInfo } from '@/lib/cart';
 import { validateMobile } from '@/lib/cart';
 import { DELIVERY_ZONES, getZoneById, isServiceableZone, zoneForRadius, RESTAURANT_ORIGIN, haversineKm } from '@/lib/delivery';
@@ -24,6 +25,8 @@ export default function CheckoutModal({ open, onClose, initial, subtotal, onSubm
   const [zoneTouched, setZoneTouched] = useState(false);
   const [distanceLoading, setDistanceLoading] = useState(false);
   const [distanceError, setDistanceError] = useState(false);
+  const [locationPromptOpen, setLocationPromptOpen] = useState(false);
+  const [locationError, setLocationError] = useState<string | null>(null);
 
   const updateZoneFromCoords = async (lat: number, lng: number) => {
     setDistanceLoading(true);
@@ -62,11 +65,33 @@ export default function CheckoutModal({ open, onClose, initial, subtotal, onSubm
     setDistanceLoading(false);
   };
 
+  const requestCurrentLocation = () => {
+    setLocationError(null);
+    if (!navigator.geolocation) {
+      setLocationError('Geolocation is not supported by this browser. Please search for your address and select the map pin manually.');
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        setForm((f) => ({ ...f, customerLat: lat, customerLng: lng }));
+        updateZoneFromCoords(lat, lng);
+        setLocationPromptOpen(false);
+      },
+      () => {
+        setLocationError('Location permission denied or unavailable. Please search for your address and select the map pin manually.');
+      }
+    );
+  };
+
   useEffect(() => {
     if (open) {
       setForm(initial);
       setErrors({});
       setZoneTouched(false);
+      setLocationPromptOpen(false);
+      setLocationError(null);
     }
   }, [open, initial]);
 
@@ -97,6 +122,10 @@ export default function CheckoutModal({ open, onClose, initial, subtotal, onSubm
 
   const submit = (ev: React.FormEvent) => {
     ev.preventDefault();
+    if (form.orderType === 'delivery' && (!form.customerLat || !form.customerLng)) {
+      setLocationPromptOpen(true);
+      return;
+    }
     if (validate()) onSubmit(form);
   };
 
@@ -191,21 +220,7 @@ export default function CheckoutModal({ open, onClose, initial, subtotal, onSubm
               {/* Current location */}
               <button
                 type="button"
-                onClick={() => {
-                  if (!navigator.geolocation) {
-                    alert('Geolocation not supported');
-                    return;
-                  }
-                  navigator.geolocation.getCurrentPosition(
-                    (pos) => {
-                      const lat = pos.coords.latitude;
-                      const lng = pos.coords.longitude;
-                      setForm((f) => ({ ...f, customerLat: lat, customerLng: lng }));
-                      updateZoneFromCoords(lat, lng);
-                    },
-                    () => alert('Location permission denied or unavailable')
-                  );
-                }}
+                onClick={requestCurrentLocation}
                 className="w-full py-2.5 rounded-xl border border-white/10 bg-[#1a1a1a] text-white text-sm font-semibold hover:bg-[#222]"
               >
                 Use My Current Location
@@ -247,6 +262,10 @@ export default function CheckoutModal({ open, onClose, initial, subtotal, onSubm
             </div>
           )}
 
+          {locationError && (
+            <p className="text-xs text-red-400">{locationError}</p>
+          )}
+
           <div>
             <label className="block text-xs text-secondary mb-1">Special Instructions</label>
             <textarea
@@ -267,13 +286,50 @@ export default function CheckoutModal({ open, onClose, initial, subtotal, onSubm
               Back to Cart
             </button>
             <button
-              type="submit"
+              type="button"
+              onClick={(e) => { e.preventDefault(); submit(e as any); }}
               className="flex-1 py-2.5 rounded-xl bg-[#d4af37] text-[#0a0a0a] font-bold text-sm hover:bg-[#e6c850]"
             >
               Review Order
             </button>
           </div>
         </form>
+
+        {locationPromptOpen && typeof document !== 'undefined' && createPortal(
+          <div className="fixed inset-0 z-[9999] bg-black/80 flex items-center justify-center p-4">
+            <div className="w-full max-w-sm bg-[#141414] border border-[#d4af37]/30 rounded-2xl p-5 text-center">
+              <h3 className="text-lg font-bold text-[#d4af37] mb-2">Delivery Location Required</h3>
+              <p className="text-sm text-secondary mb-4">
+                Please select and confirm your delivery location first so we can check whether delivery is available in your area and calculate your minimum order amount.
+              </p>
+              <div className="flex flex-col gap-2">
+                <button
+                  type="button"
+                  onClick={requestCurrentLocation}
+                  className="w-full py-2.5 rounded-xl bg-[#d4af37] text-[#0a0a0a] font-bold text-sm hover:bg-[#e6c850]"
+                >
+                  Use My Current Location
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLocationPromptOpen(false)}
+                  className="w-full py-2.5 rounded-xl border border-white/10 bg-[#1a1a1a] text-white font-semibold text-sm hover:bg-[#222]"
+                >
+                  Choose Address Manually
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLocationPromptOpen(false)}
+                  className="w-full py-2.5 rounded-xl border border-white/10 text-secondary text-sm font-semibold hover:text-[#d4af37]"
+                >
+                  Go Back
+                </button>
+              </div>
+              {locationError && <p className="text-xs text-red-400 mt-3">{locationError}</p>}
+            </div>
+          </div>,
+          document.body
+        )}
       </div>
     </div>
   );
