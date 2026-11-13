@@ -166,6 +166,16 @@ export default function MenuClient({
     setCart(next);
     setSyncNotice(changes);
     if (next.length === 0) return;
+    if (next.length > 0 && next.every((c) => {
+      const m = items.find((i) => i.id === c.id);
+      return m?.category_id === ROTI_TOKRI_CATEGORY_ID;
+    })) {
+      setPopup({
+        title: 'Order Restriction',
+        message: 'Roti Ki Tokri items cannot be ordered alone. Please add at least one item from another food category to continue.',
+      });
+      return;
+    }
     if (next.length > 0 && next.every((c) => isRotiOrChapatiName(c.name))) {
       setPopup({ title: 'Minimum Order Requirement', message: rotiOnlyRestrictionMessage() });
       return;
@@ -225,6 +235,16 @@ export default function MenuClient({
       setPopup({ title: 'Empty Cart', message: 'Your cart is empty. Please add items before placing an order.' });
       return;
     }
+    if (next.every((c) => {
+      const m = items.find((i) => i.id === c.id);
+      return m?.category_id === ROTI_TOKRI_CATEGORY_ID;
+    })) {
+      setPopup({
+        title: 'Order Restriction',
+        message: 'Roti Ki Tokri items cannot be ordered alone. Please add at least one item from another food category to continue.',
+      });
+      return;
+    }
     if (next.every((c) => isRotiOrChapatiName(c.name))) {
       setPopup({ title: 'Minimum Order Requirement', message: rotiOnlyRestrictionMessage() });
       return;
@@ -259,6 +279,13 @@ export default function MenuClient({
 
   const cartCount = cartTotalQty(cart);
   const isRotiOnlyCart = cart.length > 0 && cart.every((c) => isRotiOrChapatiName(c.name));
+  const ROTI_TOKRI_CATEGORY_ID = 'cat-roti-ki-tokri';
+  const isRotiKiTokriOnlyCart =
+    cart.length > 0 &&
+    cart.every((c) => {
+      const m = items.find((i) => i.id === c.id);
+      return m?.category_id === ROTI_TOKRI_CATEGORY_ID;
+    });
 
   const itemCountByCategory = (catId: string) => items.filter((i) => i.category_id === catId && i.is_available).length;
 
