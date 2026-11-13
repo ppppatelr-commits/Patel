@@ -127,6 +127,9 @@ export function generateOrderMessage(cart: CartItem[], c: CustomerInfo, isUpdate
     if (c.deliveryPin && c.deliveryPin.trim()) {
       lines.push(`Delivery Location Pin: ${c.deliveryPin.trim()}`);
     }
+    if (c.customerLat != null && c.customerLng != null) {
+      lines.push(`Google Maps: https://maps.google.com/?q=${c.customerLat},${c.customerLng}`);
+    }
     lines.push('');
   }
   lines.push('========================');

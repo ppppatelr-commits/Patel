@@ -202,7 +202,7 @@ export default function MenuClient({
       if (subtotalNow < zone.minOrder) {
         setPopup({
           title: 'Minimum Order Requirement',
-          message: `Your minimum order amount is ₹${zone.minOrder}. Add ₹${zone.minOrder - subtotalNow} more to place your order.`,
+          message: `Your minimum order amount is ₹${zone.minOrder}. Your current subtotal is ₹${subtotalNow}. Please add ₹${zone.minOrder - subtotalNow} more to continue.`,
         });
         return;
       }
@@ -261,7 +261,7 @@ export default function MenuClient({
       }
       const subtotalNow = cartSubtotal(next);
       if (subtotalNow < zone.minOrder) {
-        setPopup({ title: 'Minimum Order Requirement', message: `Your minimum order amount is ₹${zone.minOrder}. Add ₹${zone.minOrder - subtotalNow} more to place your order.` });
+        setPopup({ title: 'Minimum Order Requirement', message: `Your minimum order amount is ₹${zone.minOrder}. Your current subtotal is ₹${subtotalNow}. Please add ₹${zone.minOrder - subtotalNow} more to continue.` });
         return;
       }
     }

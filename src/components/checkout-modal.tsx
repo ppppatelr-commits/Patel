@@ -72,11 +72,22 @@ export default function CheckoutModal({ open, onClose, initial, subtotal, onSubm
       return;
     }
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
+      async (pos) => {
         const lat = pos.coords.latitude;
         const lng = pos.coords.longitude;
         setForm((f) => ({ ...f, customerLat: lat, customerLng: lng }));
-        updateZoneFromCoords(lat, lng);
+        // Reverse geocode
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+          const data = await res.json();
+          const addr = data?.address || {};
+          const area = addr.suburb || addr.neighbourhood || addr.road || addr.city_district || '';
+          const city = addr.city || addr.town || addr.state_district || 'Mumbai';
+          setForm((f) => ({ ...f, area: area || f.area, city: city || f.city }));
+        } catch {
+          // keep manual entry
+        }
+        await updateZoneFromCoords(lat, lng);
         setLocationPromptOpen(false);
       },
       () => {
@@ -298,9 +309,9 @@ export default function CheckoutModal({ open, onClose, initial, subtotal, onSubm
         {locationPromptOpen && typeof document !== 'undefined' && createPortal(
           <div className="fixed inset-0 z-[9999] bg-black/80 flex items-center justify-center p-4">
             <div className="w-full max-w-sm bg-[#141414] border border-[#d4af37]/30 rounded-2xl p-5 text-center">
-              <h3 className="text-lg font-bold text-[#d4af37] mb-2">Delivery Location Required</h3>
+              <h3 className="text-lg font-bold text-[#d4af37] mb-2">Choose Your Delivery Location</h3>
               <p className="text-sm text-secondary mb-4">
-                Please select and confirm your delivery location first so we can check whether delivery is available in your area and calculate your minimum order amount.
+                Your details are filled in, but your delivery location is still missing. Please choose your current location or enter your address manually to check delivery availability and minimum order requirements.
               </p>
               <div className="flex flex-col gap-2">
                 <button
@@ -315,14 +326,7 @@ export default function CheckoutModal({ open, onClose, initial, subtotal, onSubm
                   onClick={() => setLocationPromptOpen(false)}
                   className="w-full py-2.5 rounded-xl border border-white/10 bg-[#1a1a1a] text-white font-semibold text-sm hover:bg-[#222]"
                 >
-                  Choose Address Manually
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setLocationPromptOpen(false)}
-                  className="w-full py-2.5 rounded-xl border border-white/10 text-secondary text-sm font-semibold hover:text-[#d4af37]"
-                >
-                  Go Back
+                  Enter Address Manually
                 </button>
               </div>
               {locationError && <p className="text-xs text-red-400 mt-3">{locationError}</p>}
